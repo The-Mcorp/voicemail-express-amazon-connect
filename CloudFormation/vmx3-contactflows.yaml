@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Deploys the Voicemail Express contact flows, as required. Updated for 2024.09.01.
+Description: Deploys the Voicemail Express contact flows, as required. Updated for 2024.09.01. Also includes customizations.
 
 Parameters:
   EXPTemplateVersion:
@@ -38,23 +38,18 @@ Parameters:
     Type: String
   ClientServicesAgentEmail:
     Type: String
-    Default: "paige.hipes@1159.ai"
     Description: Email address for the Client Services voicemail delivery
   SalesAgentEmail:
     Type: String
-    Default: "paige.hipes@1159.ai"
     Description: Email address for the Sales voicemail delivery
   MarketingAgentEmail:
     Type: String
-    Default: "paige.hipes@1159.ai"
     Description: Email address for the Marketing voicemail delivery
   HRAgentEmail:
     Type: String
-    Default: "paige.hipes@1159.ai"
     Description: Email address for the Human Resources voicemail delivery
   OtherAgentEmail:
     Type: String
-    Default: "paige.hipes@1159.ai"
     Description: Email address for General Inquiries voicemail delivery
 
 Conditions:

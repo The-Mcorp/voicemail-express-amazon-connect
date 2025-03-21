@@ -1,0 +1,130 @@
+[
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "us-east-1"
+  },
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "EmailRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToEmail",
+    "ParameterValue": "yes"
+  },
+  {
+    "ParameterKey": "EXPDevBucketPrefix",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "EXPTemplateVersion",
+    "ParameterValue": "2024.09.01"
+  },
+  {
+    "ParameterKey": "LambdaLoggingLevel",
+    "ParameterValue": "DEBUG"
+  },
+  {
+    "ParameterKey": "RecordingsExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "TaskRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "VMAgentAddressKey",
+    "ParameterValue": "Email"
+  },
+  {
+    "ParameterKey": "VMDefaultMode",
+    "ParameterValue": "AmazonSimpleEmailService"
+  },
+  {
+    "ParameterKey": "VMEmailDefaultAgentTemplate",
+    "ParameterValue": "vmx3_default_agent_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMEmailDefaultQueueTemplate",
+    "ParameterValue": "vmx3_default_queue_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultFrom",
+    "ParameterValue": "amazonconnect@1159.ai"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultTo",
+    "ParameterValue": "paige.hipes@1159.ai"
+  },
+  {
+    "ParameterKey": "VMXDefaultGuidedTaskFlow",
+    "ParameterValue": "AWS::NoValue"
+  },
+  {
+    "ParameterKey": "VMXDefaultTaskFlow",
+    "ParameterValue": "AWS::NoValue"
+  },
+  {
+    "ParameterKey": "VMXKVStoS3Role",
+    "ParameterValue": "VMX3_KVS_to_S3_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXKVStoS3RoleArn",
+    "ParameterValue": "arn:aws:iam::091070931078:role/VMX3_KVS_to_S3_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXPackagerRole",
+    "ParameterValue": "VMX3_Packager_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXPackagerRoleArn",
+    "ParameterValue": "arn:aws:iam::091070931078:role/VMX3_Packager_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXPresignerRole",
+    "ParameterValue": "VMX3_Presigner_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXPresignerRoleArn",
+    "ParameterValue": "arn:aws:iam::091070931078:role/VMX3_Presigner_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3RecordingsBucket",
+    "ParameterValue": "vmx3-recordings-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3TranscriptsBucket",
+    "ParameterValue": "vmx3-transcripts-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXSecrets",
+    "ParameterValue": "arn:aws:secretsmanager:us-east-1:091070931078:secret:VMX3_Access_Secrets_dev-elevenfiftynine-bsP2vY"
+  },
+  {
+    "ParameterKey": "VMXTranscriberErrorRole",
+    "ParameterValue": "VMX3_Transcriber_Error_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXTranscriberErrorRoleArn",
+    "ParameterValue": "arn:aws:iam::091070931078:role/VMX3_Transcriber_Error_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXTranscriberRole",
+    "ParameterValue": "VMX3_Transcriber_Role_dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXTranscriberRoleArn",
+    "ParameterValue": "arn:aws:iam::091070931078:role/VMX3_Transcriber_Role_dev-elevenfiftynine"
+  }
+]

@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 
 Description: Deploys the Voicemail Express solution for Amazon Connect. Updated for 2024.09.01.
 
@@ -22,18 +22,21 @@ Metadata:
           - EnableVMToEmail
           - VMDefaultMode
       - Label:
-          default: 3. Voicemail Express Recording Simple Storage Service (S3) Retention
+          default:
+            3. Voicemail Express Recording Simple Storage Service (S3) Retention
             Settings
         Parameters:
           - RecordingsExpireInXDays
           - ExpiredRecordingBehavior
       - Label:
-          default: 4. Amazon Connect Guided Task Parameters  (Only required for guided
+          default:
+            4. Amazon Connect Guided Task Parameters  (Only required for guided
             task delivery)
         Parameters:
           - GuidedTaskRecordingLinksExpireInXMinutes
       - Label:
-          default: 5. Amazon Connect Task Parameters (Only required for standard task
+          default:
+            5. Amazon Connect Task Parameters (Only required for standard task
             delivery)
         Parameters:
           - TaskRecordingLinksExpireInXDays
@@ -54,11 +57,30 @@ Metadata:
         Parameters:
           - EXPDevBucketPrefix
           - EXPTemplateVersion
+      - Label:
+          default: 8. Department-Specific Email Settings
+        Parameters:
+          - ClientServicesAgentEmail
+          - SalesAgentEmail
+          - MarketingAgentEmail
+          - HRAgentEmail
+          - OtherAgentEmail
     ParameterLabels:
+      ClientServicesAgentEmail:
+        default: Client Services Department Email
+      SalesAgentEmail:
+        default: Sales Department Email
+      MarketingAgentEmail:
+        default: Marketing Department Email
+      HRAgentEmail:
+        default: Human Resources Department Email
+      OtherAgentEmail:
+        default: General Inquiries Email
       AWSRegion:
         default: Which AWS region is your Amazon Connect Instance deployed to?
       ConnectCTRStreamARN:
-        default: What is the ARN for the Kinesis Data Stream that is configured for
+        default:
+          What is the ARN for the Kinesis Data Stream that is configured for
           Contact Record streaming.
       ConnectInstanceAlias:
         default: What is your Amazon Connect instance alias?
@@ -69,13 +91,15 @@ Metadata:
       EnableVMToConnectTask:
         default: Enable Voicemail delivery as an Amazon Connect Task?
       EnableVMToConnectGuidedTask:
-        default: Enable Voicemail delivery as an Amazon Connect Guided Task? (DEFAULT
+        default:
+          Enable Voicemail delivery as an Amazon Connect Guided Task? (DEFAULT
           MODE)
       EnableVMToEmail:
         default: Enable Voicemail delivery as an Email using Amazon Simple Email
           Service?
       EXPDevBucketPrefix:
-        default: (ADVANCED USE ONLY) What is the bucket prefix for your custom code S3
+        default:
+          (ADVANCED USE ONLY) What is the bucket prefix for your custom code S3
           bucket?
       ExpiredRecordingBehavior:
         default: When the recording reaches its lifecycle, what action should be taken?
@@ -87,15 +111,18 @@ Metadata:
       VMXKVSStreamPrefix:
         default: What is the prefix for the Kinesis Video Streams (KVS) associated with this instance?
       LambdaLoggingLevel:
-        default: For the included AWS Lambda functions, what should the default logging
+        default:
+          For the included AWS Lambda functions, what should the default logging
           level be set to?
       RecordingsExpireInXDays:
-        default: How long should we keep your voicemail recordings before deleting or
+        default:
+          How long should we keep your voicemail recordings before deleting or
           archiving? (# of days)
       TaskRecordingLinksExpireInXDays:
         default: How long should the presigned recording URL be valid for? (# of days)
       VMAgentAddressKey:
-        default: Do you store agent email addresses in the Email, Secondary Email, or
+        default:
+          Do you store agent email addresses in the Email, Secondary Email, or
           Username field?
       VMDefaultMode:
         default: What is your default delivery mode?
@@ -136,7 +163,8 @@ Parameters:
   ConnectInstanceAlias:
     Type: String
     Default: REPLACEME
-    Description: Provide the instance alias for your Amazon Connect instance. You
+    Description:
+      Provide the instance alias for your Amazon Connect instance. You
       can find this in the in the AWS Console for Amazon Connect. It is shown in
       the list of instances. Please use lowercase letters ONLY.
   ConnectInstanceARN:
@@ -145,11 +173,11 @@ Parameters:
     Description: Provide the instance ARN for your Amazon Connect istance.
   EXPDevBucketPrefix:
     Type: String
-    Default: ''
+    Default: ""
     Description: Not required and only used for development purposes.
   VMXKVSStreamPrefix:
     Type: String
-    Default: 'Looks like - PREFIX-connect-ALIAS-contact-'
+    Default: "Looks like - PREFIX-connect-ALIAS-contact-"
     Description: The full prefix for the KVS streams. You can find this in the Connect Console at Data Storage > Live media Streaming > Kinesis video stream prefix.
   EmailRecordingLinksExpireInXDays:
     Type: String
@@ -177,30 +205,32 @@ Parameters:
     Description: Select the number of days.
   EnableVMToConnectTask:
     Type: String
-    Default: 'no'
+    Default: "no"
     AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: Allow voicemails to be delivered to agents as Amazon Connect Tasks.
+      - "yes"
+      - "no"
+    Description:
+      Allow voicemails to be delivered to agents as Amazon Connect Tasks.
       Works with Agent Workspace, CCP, or streams. Incoming task will contain
       the transcript and a presigned URL to the recording.
   EnableVMToConnectGuidedTask:
     Type: String
-    Default: 'yes'
+    Default: "yes"
     AllowedValues:
-      - 'yes'
-      - 'no'
-    Description: Allow voicemails to be delivered to agents as Amazon Connect Guided
+      - "yes"
+      - "no"
+    Description:
+      Allow voicemails to be delivered to agents as Amazon Connect Guided
       Tasks. Similar to a normal Task, however the presentation of the voicemail
       is via agent guide, which includes a media player experience. This
       requires the agent to use the Agent Workspace or a custom UI that
       incoporates agent guides.
   EnableVMToEmail:
     Type: String
-    Default: 'no'
+    Default: "no"
     AllowedValues:
-      - 'yes'
-      - 'no'
+      - "yes"
+      - "no"
     Description: Allow voicemails to be delivered to agents as external Emails.
       These will not be tracked or routed via Amazon Connect.
   ExpiredRecordingBehavior:
@@ -210,7 +240,8 @@ Parameters:
       - delete
       - keep
       - glacier
-    Description: When recordings expire, do you want to delete the recording, keep
+    Description:
+      When recordings expire, do you want to delete the recording, keep
       it, or move it to Glacier?
   EXPTemplateVersion:
     Type: String
@@ -233,7 +264,8 @@ Parameters:
       - WARN
       - INFO
       - DEBUG
-    Description: Default is Info. This can be changed later. Details on logging can
+    Description:
+      Default is Info. This can be changed later. Details on logging can
       be found at
       https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html#monitoring-cloudwatchlogs-runtime-logging
   RecordingsExpireInXDays:
@@ -259,7 +291,8 @@ Parameters:
       - AmazonConnectGuidedTask
       - AmazonConnectTask
       - AmazonSimpleEmailService
-    Description: If no other voicemail delivery model can be identified, which model
+    Description:
+      If no other voicemail delivery model can be identified, which model
       should be used?
   VMToEmailDefaultFrom:
     Type: String
@@ -270,7 +303,8 @@ Parameters:
   VMToEmailDefaultTo:
     Type: String
     Default: voicemail_to@test.com
-    Description: Email address to receive voicemails where another TO address could
+    Description:
+      Email address to receive voicemails where another TO address could
       not be identified. This will also be configured as the test TO address.
   VMTestAgentId:
     Type: String
@@ -280,27 +314,43 @@ Parameters:
     Type: String
     Default: Looks like -
       arn:aws:connect:REGION:ACCOUNT:instance/INSTANCEID/queue/QUEUEID
-    Description: The Queue ARN can be found in the Amazon Connect UI by navigating
+    Description:
+      The Queue ARN can be found in the Amazon Connect UI by navigating
       to Routing > Queue, choosing the queue, then expanding the 'Show
       additional queue information' section.
+  ClientServicesAgentEmail:
+    Type: String
+    Description: Email address for the Client Services voicemail delivery
+  SalesAgentEmail:
+    Type: String
+    Description: Email address for the Sales voicemail delivery
+  MarketingAgentEmail:
+    Type: String
+    Description: Email address for the Marketing voicemail delivery
+  HRAgentEmail:
+    Type: String
+    Description: Email address for the Human Resources voicemail delivery
+  OtherAgentEmail:
+    Type: String
+    Description: Email address for General Inquiries voicemail delivery
 
 Conditions:
   ConnectTasksEnabled: !Equals
     - !Ref EnableVMToConnectTask
-    - 'yes'
+    - "yes"
   ConnectGuidedTasksEnabled: !Equals
     - !Ref EnableVMToConnectGuidedTask
-    - 'yes'
+    - "yes"
   AWSEmailEnabled: !Equals
     - !Ref EnableVMToEmail
-    - 'yes'
+    - "yes"
   NonGuidedOptions: !Or
     - !Equals
       - !Ref EnableVMToConnectTask
-      - 'yes'
+      - "yes"
     - !Equals
       - !Ref EnableVMToEmail
-      - 'yes'
+      - "yes"
 
 Mappings:
   VMModes:
@@ -312,7 +362,6 @@ Mappings:
       mode: guided_task
 
 Resources:
-
   VMXCoreStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -324,7 +373,7 @@ Resources:
         EnableVMToConnectGuidedTask: !Ref EnableVMToConnectGuidedTask
         EnableVMToEmail: !Ref EnableVMToEmail
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-
@@ -365,8 +414,13 @@ Resources:
           - !GetAtt VMXCoreStack.Outputs.VMXGuidedFlowPresignerRole
           - AWS::NoValue
         LambdaLoggingLevel: !Ref LambdaLoggingLevel
+        ClientServicesAgentEmail: !Ref ClientServicesAgentEmail
+        SalesAgentEmail: !Ref SalesAgentEmail
+        MarketingAgentEmail: !Ref MarketingAgentEmail
+        HRAgentEmail: !Ref HRAgentEmail
+        OtherAgentEmail: !Ref OtherAgentEmail
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-
@@ -392,7 +446,7 @@ Resources:
         LambdaLoggingLevel: !Ref LambdaLoggingLevel
         VMXSESTemplateRoleArn: !GetAtt VMXCoreStack.Outputs.VMXSESTemplateRoleArn
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-
@@ -465,7 +519,7 @@ Resources:
         TaskRecordingLinksExpireInXDays: !Ref TaskRecordingLinksExpireInXDays
         EmailRecordingLinksExpireInXDays: !Ref EmailRecordingLinksExpireInXDays
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-
@@ -514,7 +568,7 @@ Resources:
         EnableVMToConnectTask: !Ref EnableVMToConnectTask
         EnableVMToConnectGuidedTask: !Ref EnableVMToConnectGuidedTask
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-
@@ -551,7 +605,7 @@ Resources:
         EnableVMToConnectGuidedTask: !Ref EnableVMToConnectGuidedTask
 
       TemplateURL: !Join
-        - ''
+        - ""
         - - https://
           - !Ref EXPDevBucketPrefix
           - vmx-source-

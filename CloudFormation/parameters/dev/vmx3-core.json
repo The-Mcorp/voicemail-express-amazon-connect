@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToEmail",
+    "ParameterValue": "yes"
+  },
+  {
+    "ParameterKey": "ExpiredRecordingBehavior",
+    "ParameterValue": "keep"
+  },
+  {
+    "ParameterKey": "RecordingsExpireInXDays",
+    "ParameterValue": "7"
+  }
+]

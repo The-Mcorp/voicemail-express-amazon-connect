@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey": "ConnectCTRStreamARN",
+    "ParameterValue": "arn:aws:kinesis:us-east-1:091070931078:stream/dev-connect-kinesis-data-stream"
+  },
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "ConnectInstanceARN",
+    "ParameterValue": "arn:aws:connect:us-east-1:091070931078:instance/caf2f3d0-0fe6-4fb1-8a6b-6c080505e41d"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EXPTemplateVersion",
+    "ParameterValue": "2024.09.01"
+  },
+  {
+    "ParameterKey": "VMXGuidedFlowPresignerArn",
+    "ParameterValue": "AWS::NoValue"
+  },
+  {
+    "ParameterKey": "VMXKVStoS3",
+    "ParameterValue": "VMX3-KVStoS3-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXPackagerArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:091070931078:function:VMX3-Packager-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3RecordingsBucket",
+    "ParameterValue": "vmx3-recordings-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3RecordingsBucketArn",
+    "ParameterValue": "arn:aws:s3:::vmx3-recordings-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3TranscriptsBucket",
+    "ParameterValue": "vmx3-transcripts-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXS3TranscriptsBucketArn",
+    "ParameterValue": "arn:aws:s3:::vmx3-transcripts-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXTranscribeErrorArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:091070931078:function:VMX3-TranscribeErrorHandler-dev-elevenfiftynine"
+  },
+  {
+    "ParameterKey": "VMXTranscriberArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:091070931078:function:VMX3-Transcriber-dev-elevenfiftynine"
+  }
+]

@@ -1,0 +1,35 @@
+# Build artifacts
+LambdaPackages/
+python_layer/python/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Local environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AWS SAM CLI
+.aws-sam/
+samconfig.toml
+
+# Deployment parameters (may contain sensitive info)
+CloudFormation/parameters/*-parameters.json
+# But keep example file
+!CloudFormation/parameters/example-parameters.json

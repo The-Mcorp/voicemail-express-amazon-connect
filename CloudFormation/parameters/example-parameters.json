@@ -1,0 +1,106 @@
+[
+  {
+    "ParameterKey": "EXPDevBucketPrefix",
+    "ParameterValue": "dev-vmx3-"
+  },
+  {
+    "ParameterKey": "EXPTemplateVersion",
+    "ParameterValue": "2024.09.01"
+  },
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "us-east-1"
+  },
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "my-connect-instance"
+  },
+  {
+    "ParameterKey": "ConnectInstanceARN",
+    "ParameterValue": "arn:aws:connect:us-east-1:123456789012:instance/12345678-1234-1234-1234-123456789012"
+  },
+  {
+    "ParameterKey": "LambdaLoggingLevel",
+    "ParameterValue": "INFO"
+  },
+  {
+    "ParameterKey": "RecordingsExpireInXDays",
+    "ParameterValue": "30"
+  },
+  {
+    "ParameterKey": "TaskRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "EmailRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectTask",
+    "ParameterValue": "yes"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToEmail",
+    "ParameterValue": "yes"
+  },
+  {
+    "ParameterKey": "VMDefaultMode",
+    "ParameterValue": "AmazonSimpleEmailService"
+  },
+  {
+    "ParameterKey": "VMXDefaultTaskFlow",
+    "ParameterValue": "VMX3-Task-Default"
+  },
+  {
+    "ParameterKey": "VMXDefaultGuidedTaskFlow",
+    "ParameterValue": "VMX3-GuidedTask-Default"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultFrom",
+    "ParameterValue": "voicemail@example.com"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultTo",
+    "ParameterValue": "general@example.com"
+  },
+  {
+    "ParameterKey": "VMEmailDefaultAgentTemplate",
+    "ParameterValue": "VMX3-Agent-Email-Template"
+  },
+  {
+    "ParameterKey": "VMEmailDefaultQueueTemplate",
+    "ParameterValue": "VMX3-Queue-Email-Template"
+  },
+  {
+    "ParameterKey": "ClientServicesAgentEmail",
+    "ParameterValue": "client-services@example.com"
+  },
+  {
+    "ParameterKey": "SalesAgentEmail",
+    "ParameterValue": "sales@example.com"
+  },
+  {
+    "ParameterKey": "MarketingAgentEmail",
+    "ParameterValue": "marketing@example.com"
+  },
+  {
+    "ParameterKey": "HRAgentEmail",
+    "ParameterValue": "hr@example.com"
+  },
+  {
+    "ParameterKey": "OtherAgentEmail",
+    "ParameterValue": "general@example.com"
+  },
+  {
+    "ParameterKey": "VMAgentAddressKey",
+    "ParameterValue": "Email"
+  },
+  {
+    "ParameterKey": "VMXSecrets",
+    "ParameterValue": "vmx3-secrets"
+  }
+]

@@ -110,16 +110,26 @@ Compress-Archive -Path ".\Code\Core\vmx3_ses_template_tool.py" -DestinationPath 
 # Create a proper Python layer package with dependencies
 mkdir -p python_layer/python
 
-# Create a requirements.txt file
+# Create a requirements.txt file with ALL required dependencies
 @"
 boto3>=1.26.0
 requests>=2.28.1
 aws-lambda-powertools>=2.15.0
 cffi>=1.15.1
+phonenumbers>=8.12.0
 "@ | Out-File -FilePath requirements.txt -Encoding utf8
 
 # Install dependencies into python directory
 pip install -r requirements.txt -t python_layer/python/
+
+# Copy the Kinesis Video Streams library from the project
+mkdir -p python_layer/python/amazon_kinesis_video_consumer_library
+Copy-Item -Path ".\Code\Core\amazon_kinesis_video_consumer_library\*" -Destination "python_layer/python/amazon_kinesis_video_consumer_library" -Recurse
+
+# Copy all shared modules to the Python layer
+Copy-Item -Path ".\Code\Core\sub_connect_task.py" -Destination "python_layer/python\"
+Copy-Item -Path ".\Code\Core\sub_connect_guided_task.py" -Destination "python_layer/python\"
+Copy-Item -Path ".\Code\Core\sub_ses_email.py" -Destination "python_layer/python\"
 
 # Create the zip with the CORRECT NAME
 cd python_layer
@@ -203,17 +213,88 @@ The Voicemail Express stack `dev-1159-voicemail-VMX3` has been successfully depl
    - requests
    - aws-lambda-powertools
    - cffi
+   - phonenumbers
+   - amazon_kinesis_video_consumer_library (from source code)
+   - shared project modules (sub_connect_task.py, sub_connect_guided_task.py, sub_ses_email.py)
+
+### Next Steps: Fixing Lambda Layers
+
+The Voicemail Express solution is now partially working (KVS to S3 and transcription), but there are still issues with email delivery. The following steps are required to fix the Lambda layers:
+
+1. **Update Python Layer with All Dependencies**:
+   ```powershell
+   # Clean up existing directories
+   Remove-Item -Recurse -Force python_layer -ErrorAction SilentlyContinue
+   Remove-Item -Recurse -Force LambdaPackages -ErrorAction SilentlyContinue
+   
+   # Create directories
+   mkdir -p python_layer/python
+   mkdir -p LambdaPackages
+   
+   # Install external dependencies
+   pip install boto3>=1.26.0 requests>=2.28.1 aws-lambda-powertools>=2.15.0 cffi>=1.15.1 phonenumbers>=8.12.0 -t python_layer/python/
+   
+   # Add Kinesis library
+   mkdir -p python_layer/python/amazon_kinesis_video_consumer_library
+   Copy-Item -Path ".\Code\Core\amazon_kinesis_video_consumer_library\*" -Destination "python_layer/python/amazon_kinesis_video_consumer_library" -Recurse
+   
+   # Add shared modules
+   Copy-Item -Path ".\Code\Core\sub_connect_task.py" -Destination "python_layer/python\"
+   Copy-Item -Path ".\Code\Core\sub_connect_guided_task.py" -Destination "python_layer/python\"
+   Copy-Item -Path ".\Code\Core\sub_ses_email.py" -Destination "python_layer/python\"
+   
+   # Create and upload the layer
+   cd python_layer
+   Compress-Archive -Path "python" -DestinationPath "../LambdaPackages/vmx3_common_python.zip" -Force
+   cd ..
+   aws s3 cp .\LambdaPackages\vmx3_common_python.zip s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+   ```
+
+2. **Update All Lambda Functions to Use the New Layer**:
+   ```powershell
+   # Update the Layer version in all Lambda functions
+   aws lambda update-function-configuration --function-name VMX3-KVStoS3-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   aws lambda update-function-configuration --function-name VMX3-Transcriber-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   aws lambda update-function-configuration --function-name VMX3-Packager-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   aws lambda update-function-configuration --function-name VMX3-SESEmail-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   aws lambda update-function-configuration --function-name VMX3-Presigner-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   aws lambda update-function-configuration --function-name VMX3-GuidedFlowPresigner-dev-elevenfiftynine --layers arn:aws:lambda:us-east-1:091070931078:layer:common_python_layer_dev-elevenfiftynine:1 --profile ops
+   ```
+
+3. **Test the Complete Pipeline**:
+   - Place a test call to generate a voicemail
+   - Monitor CloudWatch logs for all Lambda functions
+   - Check S3 buckets for artifacts at each stage
+   - Verify email delivery to the appropriate department address
 
 ### Smoke Testing Checklist
 
-- [ ] Make test call and leave voicemail
-- [ ] Verify recording is stored in S3
-- [ ] Confirm transcription is created
+- [x] Make test call and leave voicemail
+- [x] Verify recording is stored in S3
+- [x] Confirm transcription is created
 - [ ] Check email delivery to correct department
 - [ ] Validate presigned URLs for recordings work properly
 - [ ] Test different department routing scenarios
 
 ## Known Issues and Solutions
+
+### Python Layer Dependencies (CRITICAL)
+The solution requires multiple dependencies to be included in the Python layer:
+
+1. **External Libraries:**
+   - boto3
+   - requests
+   - aws-lambda-powertools
+   - cffi
+   - phonenumbers
+
+2. **Custom Modules:**
+   - amazon_kinesis_video_consumer_library (from source code)
+   - sub_connect_task.py
+   - sub_connect_guided_task.py
+   - sub_ses_email.py
+
+Failing to include all required dependencies will cause Lambda functions to fail with "No module named..." errors.
 
 ### File Naming Conventions (CRITICAL)
 The CloudFormation templates expect specific file names that might differ from the source files:
@@ -296,12 +377,3 @@ To find where and how Lambda function files are referenced in templates:
 ```powershell
 grep -r "python.zip" CloudFormation/
 ```
-
-## Monitoring and Maintenance
-
-For ongoing operations:
-
-1. **Monitor CloudWatch Logs** - Check the Lambda function logs for any errors or issues
-2. **Set Up CloudWatch Alarms** - Create alarms to notify you of failures in the voicemail processing chain 
-3. **Consider Implementing CI/CD** - For regular updates to the solution, setting up a CI/CD pipeline would streamline the process
-4. **Document Department Routing** - Create documentation for your team on how the department-specific routing works

@@ -1,5 +1,3 @@
-Here's the updated version of your README based on the successful deployment:
-
 # Voicemail Express Deployment Guide
 
 ## Overview

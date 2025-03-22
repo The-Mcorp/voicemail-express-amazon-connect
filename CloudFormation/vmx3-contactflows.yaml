@@ -262,35 +262,6 @@ Resources:
                 "y": -38.4
               },
               "ActionMetadata": {
-                "Set email delivery mode": {
-                  "position": {
-                    "x": -232,
-                    "y": 356.8
-                  },
-                  "isFriendlyName": true,
-                  "dynamicParams": []
-                },
-                "Set remaining required attributes for VMX3": {
-                  "position": {
-                    "x": 906.4,
-                    "y": 264
-                  },
-                  "isFriendlyName": true,
-                  "parameters": {
-                    "Attributes": {
-                      "vmx3_from": {
-                        "useDynamic": true
-                      },
-                      "vmx3_queue_arn": {
-                        "useDynamic": true
-                      }
-                    }
-                  },
-                  "dynamicParams": [
-                    "vmx3_from",
-                    "vmx3_queue_arn"
-                  ]
-                },
                 "Main test flow greeting": {
                   "position": {
                     "x": 81.6,
@@ -298,10 +269,10 @@ Resources:
                   },
                   "isFriendlyName": true
                 },
-                "Turn on flow logging": {
+                "End Test": {
                   "position": {
-                    "x": -452.8,
-                    "y": -39.2
+                    "x": 1544.8,
+                    "y": 671.2
                   },
                   "isFriendlyName": true
                 },
@@ -313,16 +284,17 @@ Resources:
                   "isFriendlyName": true,
                   "dynamicParams": []
                 },
-                "193189dc-9ede-41fb-acb3-e8271d36e8c9": {
+                "Turn on flow logging": {
                   "position": {
-                    "x": -266.4,
-                    "y": 677.6
-                  }
+                    "x": -452.8,
+                    "y": -39.2
+                  },
+                  "isFriendlyName": true
                 },
                 "Invoke the core VMX3 module": {
                   "position": {
-                    "x": 1184,
-                    "y": 264
+                    "x": 1363.2,
+                    "y": 265.6
                   },
                   "isFriendlyName": true,
                   "parameters": {
@@ -331,6 +303,21 @@ Resources:
                     }
                   },
                   "useDynamic": true
+                },
+                "Play Fallback Prompt": {
+                  "position": {
+                    "x": 1120.8,
+                    "y": 512.8
+                  },
+                  "isFriendlyName": true
+                },
+                "Set email delivery mode": {
+                  "position": {
+                    "x": -232,
+                    "y": 356.8
+                  },
+                  "isFriendlyName": true,
+                  "dynamicParams": []
                 },
                 "Set Client Services Agent": {
                   "position": {
@@ -356,13 +343,26 @@ Resources:
                   "isFriendlyName": true,
                   "dynamicParams": []
                 },
-                "Set HR Agent": {
+                "Set General Inquiries Agent": {
                   "position": {
-                    "x": 316,
-                    "y": 172.8
+                    "x": 317.6,
+                    "y": 355.2
                   },
                   "isFriendlyName": true,
                   "dynamicParams": []
+                },
+                "193189dc-9ede-41fb-acb3-e8271d36e8c9": {
+                  "position": {
+                    "x": -266.4,
+                    "y": 677.6
+                  }
+                },
+                "Error message": {
+                  "position": {
+                    "x": 587.2,
+                    "y": 584.8
+                  },
+                  "isFriendlyName": true
                 },
                 "Set the destination type": {
                   "position": {
@@ -372,35 +372,58 @@ Resources:
                   "isFriendlyName": true,
                   "conditionMetadata": [
                     {
-                      "id": "3e5891c2-f43a-4cb7-b085-fa745a7d571f",
+                      "id": "5a787649-16e7-423c-bc92-0726fbd68611",
                       "value": "1"
                     },
                     {
-                      "id": "04da07fb-897b-4314-9e09-177a19067c1b",
+                      "id": "c763e48b-ec1f-42cc-876f-0cd8bdd48ecd",
                       "value": "2"
                     },
                     {
-                      "id": "14e04fbb-3abc-428e-8ae6-89862d97e11c",
+                      "id": "fe0b5972-b1a9-4f9d-8caa-ac6fc5701666",
                       "value": "3"
                     },
                     {
-                      "id": "321754d0-d45c-4923-a97a-f6a4f40bca57",
+                      "id": "878b79c9-f7f5-489c-b1a7-a23f0dea5413",
                       "value": "4"
                     },
                     {
-                      "id": "397093ea-f023-4e45-b158-b85066c51160",
+                      "id": "49feb5a2-1c37-4c88-a629-72b805e96516",
                       "value": "5"
                     },
                     {
-                      "id": "6f36b0c2-811e-479c-ad0d-eef556988d31",
+                      "id": "3b3fb924-4bde-46ba-8dfe-a73ef3e93f86",
                       "value": "9"
                     }
                   ]
                 },
+                "Set HR Agent": {
+                  "position": {
+                    "x": 316,
+                    "y": 172.8
+                  },
+                  "isFriendlyName": true,
+                  "dynamicParams": []
+                },
+                "Play Department Prompt": {
+                  "position": {
+                    "x": 1117.6,
+                    "y": 268
+                  },
+                  "isFriendlyName": true,
+                  "parameters": {
+                    "Media": {
+                      "Uri": {
+                        "useDynamic": true
+                      }
+                    }
+                  },
+                  "useDynamic": true
+                },
                 "Set agent queue": {
                   "position": {
-                    "x": 589.6,
-                    "y": 273.6
+                    "x": 588.8,
+                    "y": 272.8
                   },
                   "isFriendlyName": true,
                   "parameters": {
@@ -410,32 +433,116 @@ Resources:
                   },
                   "useDynamic": true
                 },
-                "Set Other Agent": {
+                "Set remaining required attributes for VMX3": {
                   "position": {
-                    "x": 317.6,
-                    "y": 355.2
+                    "x": 811.2,
+                    "y": 270.4
                   },
                   "isFriendlyName": true,
-                  "dynamicParams": []
-                },
-                "Error message": {
-                  "position": {
-                    "x": 587.2,
-                    "y": 584.8
+                  "parameters": {
+                    "Attributes": {
+                      "vmx3_from": {
+                        "useDynamic": true
+                      },
+                      "vmx3_queue_arn": {
+                        "useDynamic": true
+                      }
+                    }
                   },
-                  "isFriendlyName": true
-                },
-                "End Test": {
-                  "position": {
-                    "x": 1544.8,
-                    "y": 671.2
-                  },
-                  "isFriendlyName": true
+                  "dynamicParams": [
+                    "vmx3_from",
+                    "vmx3_queue_arn"
+                  ]
                 }
               },
               "Annotations": []
             },
             "Actions": [
+              {
+                "Parameters": {
+                  "SSML": "<prosody rate=\"110%\"> Thanks for calling eleven-fiftynine!</prosody>"
+                },
+                "Identifier": "Main test flow greeting",
+                "Type": "MessageParticipant",
+                "Transitions": {
+                  "NextAction": "Set email delivery mode",
+                  "Errors": [
+                    {
+                      "NextAction": "Set email delivery mode",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {},
+                "Identifier": "End Test",
+                "Type": "DisconnectParticipant",
+                "Transitions": {}
+              },
+              {
+                "Parameters": {
+                  "Attributes": {
+                    "vmx3_core_module": "${VMCUSTOMCOREFLOWMODULE}",
+                    "vmx3_task_flow": "EXAMPLE",
+                    "vmx3_guided_task_flow": "EXAMPLE"
+                  },
+                  "TargetContact": "Current"
+                },
+                "Identifier": "Set all of the test attributes",
+                "Type": "UpdateContactAttributes",
+                "Transitions": {
+                  "NextAction": "Main test flow greeting",
+                  "Errors": [
+                    {
+                      "NextAction": "Main test flow greeting",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "FlowLoggingBehavior": "Enabled"
+                },
+                "Identifier": "Turn on flow logging",
+                "Type": "UpdateFlowLoggingBehavior",
+                "Transitions": {
+                  "NextAction": "Set all of the test attributes"
+                }
+              },
+              {
+                "Parameters": {
+                  "FlowModuleId": "$.Attributes.vmx3_core_module"
+                },
+                "Identifier": "Invoke the core VMX3 module",
+                "Type": "InvokeFlowModule",
+                "Transitions": {
+                  "NextAction": "Error message",
+                  "Errors": [
+                    {
+                      "NextAction": "Error message",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "Text": "Please leave a message after the beep, and we will get back to you soon. Please leave your name, number, and reason for calling. Have a great day."
+                },
+                "Identifier": "Play Fallback Prompt",
+                "Type": "MessageParticipant",
+                "Transitions": {
+                  "NextAction": "Invoke the core VMX3 module",
+                  "Errors": [
+                    {
+                      "NextAction": "Invoke the core VMX3 module",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
               {
                 "Parameters": {
                   "Attributes": {
@@ -458,66 +565,82 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_from": "$.CustomerEndpoint.Address",
-                    "vmx3_lang": "en-US",
-                    "vmx3_queue_arn": "$.Queue.ARN"
+                    "vmx3_test_agent": "${ClientServicesAgentEmail}",
+                    "vmx3_department": "ClientServices",
+                    "department_audio_url": "s3://${VMXBucket}/prompts/ClientServices.wav"
                   },
                   "TargetContact": "Current"
                 },
-                "Identifier": "Set remaining required attributes for VMX3",
+                "Identifier": "Set Client Services Agent",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
-                  "NextAction": "Invoke the core VMX3 module",
+                  "NextAction": "Set agent queue",
                   "Errors": [
                     {
-                      "NextAction": "Invoke the core VMX3 module",
+                      "NextAction": "Error message",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
-                }
-              },
-              {
-                "Parameters": {
-                  "SSML": "<prosody rate=\"110%\"> Thanks for calling eleven-fiftynine!</prosody>"
-                },
-                "Identifier": "Main test flow greeting",
-                "Type": "MessageParticipant",
-                "Transitions": {
-                  "NextAction": "Set email delivery mode",
-                  "Errors": [
-                    {
-                      "NextAction": "Set email delivery mode",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {
-                  "FlowLoggingBehavior": "Enabled"
-                },
-                "Identifier": "Turn on flow logging",
-                "Type": "UpdateFlowLoggingBehavior",
-                "Transitions": {
-                  "NextAction": "Set all of the test attributes"
                 }
               },
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_core_module": "${VMCUSTOMCOREFLOWMODULE}",
-                    "vmx3_task_flow": "EXAMPLE",
-                    "vmx3_guided_task_flow": "EXAMPLE"
+                    "vmx3_test_agent": "${SalesAgentEmail}",
+                    "vmx3_department": "Sales",
+                    "department_audio_url": "s3://${VMXBucket}/prompts/Sales.wav"
                   },
                   "TargetContact": "Current"
                 },
-                "Identifier": "Set all of the test attributes",
+                "Identifier": "Set Sales Agent",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
-                  "NextAction": "Main test flow greeting",
+                  "NextAction": "Set agent queue",
                   "Errors": [
                     {
-                      "NextAction": "Main test flow greeting",
+                      "NextAction": "Error message",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "Attributes": {
+                    "vmx3_test_agent": "${MarketingAgentEmail}",
+                    "vmx3_department": "Marketing",
+                    "department_audio_url": "https://${VMXBucket}.s3.${AWS::Region}.amazonaws.com/prompts/Marketing.wav"
+                  },
+                  "TargetContact": "Current"
+                },
+                "Identifier": "Set Marketing Agent",
+                "Type": "UpdateContactAttributes",
+                "Transitions": {
+                  "NextAction": "Set agent queue",
+                  "Errors": [
+                    {
+                      "NextAction": "Error message",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "Attributes": {
+                    "vmx3_test_agent": "${OtherAgentEmail}",
+                    "vmx3_department": "GeneralInquiries",
+                    "department_audio_url": "s3://${VMXBucket}/prompts/GeneralInquiries.wav"
+                  },
+                  "TargetContact": "Current"
+                },
+                "Identifier": "Set General Inquiries Agent",
+                "Type": "UpdateContactAttributes",
+                "Transitions": {
+                  "NextAction": "Set agent queue",
+                  "Errors": [
+                    {
+                      "NextAction": "Error message",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -555,95 +678,15 @@ Resources:
               },
               {
                 "Parameters": {
-                  "FlowModuleId": "$.Attributes.vmx3_core_module"
+                  "Text": "We have encountered an error or timeout. Please try calling again."
                 },
-                "Identifier": "Invoke the core VMX3 module",
-                "Type": "InvokeFlowModule",
+                "Identifier": "Error message",
+                "Type": "MessageParticipant",
                 "Transitions": {
-                  "NextAction": "Error message",
+                  "NextAction": "End Test",
                   "Errors": [
                     {
-                      "NextAction": "Error message",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {
-                  "Attributes": {
-                    "vmx3_test_agent": "${ClientServicesAgentEmail}",
-                    "vmx3_department": "Client Services"
-                  },
-                  "TargetContact": "Current"
-                },
-                "Identifier": "Set Client Services Agent",
-                "Type": "UpdateContactAttributes",
-                "Transitions": {
-                  "NextAction": "Set agent queue",
-                  "Errors": [
-                    {
-                      "NextAction": "Error message",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {
-                  "Attributes": {
-                    "vmx3_test_agent": "${SalesAgentEmail}",
-                    "vmx3_department": "Sales"
-                  },
-                  "TargetContact": "Current"
-                },
-                "Identifier": "Set Sales Agent",
-                "Type": "UpdateContactAttributes",
-                "Transitions": {
-                  "NextAction": "Set agent queue",
-                  "Errors": [
-                    {
-                      "NextAction": "Error message",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {
-                  "Attributes": {
-                    "vmx3_test_agent": "${MarketingAgentEmail}",
-                    "vmx3_department": "Marketing"
-                  },
-                  "TargetContact": "Current"
-                },
-                "Identifier": "Set Marketing Agent",
-                "Type": "UpdateContactAttributes",
-                "Transitions": {
-                  "NextAction": "Set agent queue",
-                  "Errors": [
-                    {
-                      "NextAction": "Error message",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {
-                  "Attributes": {
-                    "vmx3_test_agent": "${HRAgentEmail}",
-                    "vmx3_department": "Human Resources"
-                  },
-                  "TargetContact": "Current"
-                },
-                "Identifier": "Set HR Agent",
-                "Type": "UpdateContactAttributes",
-                "Transitions": {
-                  "NextAction": "Set agent queue",
-                  "Errors": [
-                    {
-                      "NextAction": "Error message",
+                      "NextAction": "End Test",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -658,7 +701,7 @@ Resources:
                 "Identifier": "Set the destination type",
                 "Type": "GetParticipantInput",
                 "Transitions": {
-                  "NextAction": "Error message",
+                  "NextAction": "193189dc-9ede-41fb-acb3-e8271d36e8c9",
                   "Conditions": [
                     {
                       "NextAction": "Set Client Services Agent",
@@ -697,7 +740,7 @@ Resources:
                       }
                     },
                     {
-                      "NextAction": "Set Other Agent",
+                      "NextAction": "Set General Inquiries Agent",
                       "Condition": {
                         "Operator": "Equals",
                         "Operands": [
@@ -721,11 +764,52 @@ Resources:
                       "ErrorType": "InputTimeLimitExceeded"
                     },
                     {
-                      "NextAction": "Error message",
+                      "NextAction": "193189dc-9ede-41fb-acb3-e8271d36e8c9",
                       "ErrorType": "NoMatchingCondition"
                     },
                     {
                       "NextAction": "Error message",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "Attributes": {
+                    "vmx3_test_agent": "${HRAgentEmail}",
+                    "vmx3_department": "HumanResources",
+                    "department_audio_url": "https://${VMXBucket}.s3.${AWS::Region}.amazonaws.com/prompts/HumanResources.wav"
+                  },
+                  "TargetContact": "Current"
+                },
+                "Identifier": "Set HR Agent",
+                "Type": "UpdateContactAttributes",
+                "Transitions": {
+                  "NextAction": "Set agent queue",
+                  "Errors": [
+                    {
+                      "NextAction": "Error message",
+                      "ErrorType": "NoMatchingError"
+                    }
+                  ]
+                }
+              },
+              {
+                "Parameters": {
+                  "Media": {
+                    "Uri": "$.Attributes.department_audio_url",
+                    "SourceType": "S3",
+                    "MediaType": "Audio"
+                  }
+                },
+                "Identifier": "Play Department Prompt",
+                "Type": "MessageParticipant",
+                "Transitions": {
+                  "NextAction": "Invoke the core VMX3 module",
+                  "Errors": [
+                    {
+                      "NextAction": "Play Fallback Prompt",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -750,44 +834,23 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${OtherAgentEmail}",
-                    "vmx3_department": "General Inquiries"
+                    "vmx3_from": "$.CustomerEndpoint.Address",
+                    "vmx3_lang": "en-US",
+                    "vmx3_queue_arn": "$.Queue.ARN"
                   },
                   "TargetContact": "Current"
                 },
-                "Identifier": "Set Other Agent",
+                "Identifier": "Set remaining required attributes for VMX3",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
-                  "NextAction": "Set agent queue",
+                  "NextAction": "Play Department Prompt",
                   "Errors": [
                     {
-                      "NextAction": "Error message",
+                      "NextAction": "Play Department Prompt",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
                 }
-              },
-              {
-                "Parameters": {
-                  "Text": "We have encountered an error or timeout. Please try calling again."
-                },
-                "Identifier": "Error message",
-                "Type": "MessageParticipant",
-                "Transitions": {
-                  "NextAction": "End Test",
-                  "Errors": [
-                    {
-                      "NextAction": "End Test",
-                      "ErrorType": "NoMatchingError"
-                    }
-                  ]
-                }
-              },
-              {
-                "Parameters": {},
-                "Identifier": "End Test",
-                "Type": "DisconnectParticipant",
-                "Transitions": {}
               }
             ]
           }
@@ -798,6 +861,8 @@ Resources:
           MarketingAgentEmail: !Ref MarketingAgentEmail
           HRAgentEmail: !Ref HRAgentEmail
           OtherAgentEmail: !Ref OtherAgentEmail
+          VMXBucket:
+            !Join ["", [!Ref EXPDevBucketPrefix, "vmx-source-", !Ref AWSRegion]]
       Description: Custom Voicemail Flow with Eleven Fifty Nine Greeting
       InstanceArn: !Ref ConnectInstanceARN
       Name: !Join ["", ["VMX3_Custom_Flow_", !Ref ConnectInstanceAlias]]

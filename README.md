@@ -1,79 +1,281 @@
-# Voicemail Express V3
-Voicemail Express is designed to provide basic voicemail functionality to Amazon Connect. It has been designed to work seamlessly behind the scenes, providing voicemail options for all agents and queues by default. It is an evolution of the Voicemail Express solution that was created specifically for Service Cloud Voice customers by the AWS team that worked with Salesforce to develop Service Cloud Voice. That solution has been cloned and included with Service Cloud Voice, and is now used at scale by customers on that offering. This version removes the Salesforce-centric options, providing the same easy-to-deploy-and-use voicemail option for standard Amazon Connect customers. Typically speaking, Voicemail Express can be deployed and validated in less than 15 minutes. 
+# 11:59 Voicemail System 
 
-![Voicemail Express Architecture](Docs/Img/VMX3.png)
+Forked from [amazon-connect/voicemail-express-amazon-connect](https://github.com/The-Mcorp/voicemail-express-amazon-connect). Updated to incorporate custom Connect Flows/Modules for department-based routing.
 
-## What's new in VMX3 (2024.09.01)
--  **Guided Task Delivery Mode**: Improves agent experience for tasks by providing a visual player and transcript in an agent guide view. Obfuscates the presigned url, which is also has a reduced lifespan of minutes instead of days. 
--  **Security Enhancements**: Moved from one unified role to one role per function, with strict policies to limit blast radius of compromised roles. For Guided Task delivery, removes the IAM user requirement for presigned URLs. 
--  **Improved Recording Lifecycle**: Seperated the presigned URL lifecycle from the s3 object lifecycle. Allows for longer retention of recordings while still being able to have a more reasonable lifecycle policy. For example, creating a presigned URL good for only 1 day, but a lifecycle policy that moves recordings to Glacier after 180 days.
--  **Additional Fixes and Enhancements**: Added an option to indicate which user field holds the agent email for email delivery mode. Fixed an issue with custom template use. 
+## Overview
+This guide provides step-by-step instructions for deploying, updating, and troubleshooting 11:59's Amazon Connect Voicemail solution through AWS CloudFormation.
 
-## How it works
-With Voicemail Express, customers can have the option to leave a voicemail for an individual agent or an Amazon Connect Queue. Once the voicemail is recorded, a series of processes take place in the following order:
-1. Voicemail recording is extracted and stored in S3 as a .wav file
-1. The recording is transcribed using Amazon Transcribe
-1. A presigned URL is generated that provides access to the voicemail recording without the need for further authentication
-1. The voicemail is packaged for delivery, including the transcription, presigned URL, and contact data. It is then delivered as an Amazon Connect Task, Guided Task, or via email using Amazon Simple Email Service (SES), depending on your configuration.
+## Prerequisites
+- AWS CLI installed and configured
+- Access to an AWS account with appropriate permissions
+- Amazon Connect instance already set up
 
-Voicemail presigned URLs are configured for a maximum length of 7 days. After 7 days, the presigned URL is no longer valid. A seperate timeframe is configured for the recordings, which are lifecycled as desired once that timeframe is met. During deployment, you have the option to configure the lifecycle window, if desired. Additionally, you have the option to keep, archive, or delete voicemail recordings. 
+## Deployment Steps
 
-## Deployment and Management
-### How to deploy
-To deploy Voicemail Express, you will need to complete the following:
-1. Complete the [Voicemail Express Prerequisites](Docs/vmx_prerequistes.md)
-1. Complete the [Voicemail Express Installation](Docs/vmx_installation_instructions.md)
+This walks through deploying the dev environment. Replace any instance of dev with the new environment (e.g., prod)
 
-### How to upgrade
-To upgrade Voicemail Express, follow the [Upgrade Your Installation](Docs/vmx_upgrade.md) instructions.
+### 1. Set Up Project Structure
+Ensure you have the necessary files:
 
-### How to uninstall
-To remove Voicemail Express follow the instructions below:
-1.  [Removing/Uninstalling Voicemail Express](Docs/vmx_uninstall.md)
+**CloudFormation Templates:**
+- CloudFormation/vmx3.yaml (main template)
+- CloudFormation/vmx3-core.yaml
+- CloudFormation/vmx3-contactflows.yaml (customized with department emails)
+- CloudFormation/vmx3-lambda-functions.yaml
+- CloudFormation/vmx3-policy-builder.yaml
+- CloudFormation/vmx3-ses-setup.yaml
+- CloudFormation/vmx3-triggers.yaml
 
-## Using Voicemail Express
-Once Voicemail Express has been deployed, you can learn more about it by reading the [High-level overview of the Voicemail Express solution](Docs/vmx_core.md). 
+**Lambda Function Source Code:**
+- Code/Core/vmx3_ses_template_tool.py
+- Code/Core/vmx3_guided_flow_presigner.py
+- Code/Core/vmx3_kvs_to_s3.py
+- Code/Core/vmx3_packager.py
+- Code/Core/vmx3_presigner.py
+- Code/Core/vmx3_transcriber.py
+- Code/Core/vmx3_transcription_error_handler.py
+- Code/Core/sub_connect_task.py
+- Code/Core/sub_connect_guided_task.py
+- Code/Core/sub_ses_email.py
 
-If your primary delivery model is Amazon Connect Guided Tasks, you can learn more about that model [here](Docs/vmx_guided_tasks.md). (This is the default)
+### 2. Create Parameters File
+Create a file at `CloudFormation/parameters/dev-parameters.json` with the necessary parameters, including the department email addresses and the S3 bucket prefix.
 
-If your primary delivery model is Amazon Connect Tasks, you can learn more about that model [here](Docs/vmx_tasks.md). 
+### 3. Create Source S3 Bucket (for CloudFormation Templates and Custom Prompts)
+Create an S3 bucket that matches the format specified in parameters (e.g., value of EXPDevBucketPrefix combined with -vmx-source-region):
 
-If your deployment model is email, you can learn more about that model [here](Docs/vmx_email.md).
+```powershell
+aws s3 mb s3://dev-vmx3-vmx-source-us-east-1 --region us-east-1 --profile ops
+```
 
-Basic troubleshooting steps can be found on the [Troubleshooting Common Voicemail Issues](Docs/vmx_troubleshooting.md) page.
+### 4. Create Bucket Policy for Source S3 Bucket
 
-You can also read about the available [support options](Docs/vmx_support.md).
+```json
+{
+    "Version": "2012-10-17",
+    "Id": "Policy1634763725216",
+    "Statement": [
+        {
+            "Sid": "Stmt1634763712285",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "connect.amazonaws.com"
+            },
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::dev-vmx3-vmx-source-us-east-1",
+                "arn:aws:s3:::dev-vmx3-vmx-source-us-east-1/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:SourceArn": "arn:aws:connect:us-east-1:091070931078:instance/caf2f3d0-0fe6-4fb1-8a6b-6c080505e41d",
+                    "aws:SourceAccount": "091070931078"
+                }
+            }
+        }
+    ]
+}
+```
 
-Finally, a list of recent changes be found on the [Changelog](Docs/vmx_changelog.md) page.
+### 5. Upload Custom Department Prompts to Source S3 Bucket
 
-## Roadmap
-The following items are currently planned for future releases. Changes to roadmap depend on feedback, however one overarching tenet of Voicemail Express is to keep the solution lightweight, with a minimal number of required services and administration, and to replace functionality with native Amazon Connect features as soon as they become available. 
--  **Jul-Sep 2024**
-   -  [x] Update KVStoS3 function to Python
-   -  [x] Reduce impact of Presigned URL sharing
-   -  [x] Create more user-friendly view
-   -  [x] Security improvements
+e.g., s3://dev-vmx3-vmx-source-us-east-1/prompts/ClientServices.wav
 
--  **Sep-Dec 2024**
-   -  [ ] Additional security enhancements
-   -  [ ] Example flows
-   -  [ ] Notification Option
-   -  [ ] GenAI summary option
-   -  [ ] Lambda VPC Option
-   -  [ ] Optional delivery mode add-ins: Allows you to add additional delivery modes as desired. The next batch of delivery modes will be:
-      -  [ ] Salesforce Case
-      -  [ ] Salesforce custom objects
-   -  [x] Reduce layer size for default deployments
-   -  [ ] Reduce complexity and number of functions
-   -  [ ] Support for GitHub sync
+### 6. Upload Templates and Lambda Function Packages
+First, upload all CloudFormation templates to the correct location in S3:
 
-## Current Published Version
-### 2024.09.01
-This is the published version of the code and templates that has been deployed to our S3 buckets and will be used during a normal deployment.
+```powershell
+aws s3 cp .\CloudFormation\vmx3-core.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-lambda-functions.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-policy-builder.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-ses-setup.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-triggers.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+```
 
-## Acknowledgements
-While the code and documentation has been predominantly pushed by [Jason Douglas](https://github.com/dougjaso), this is largely due to internal team processes. This version of Voicemail Express 3 has been built and tested by a number of people including:
+Next, prepare and upload the Lambda function code:
 
--  [Jason Douglas](https://github.com/dougjaso): Base solution design, roadmap, feature management, brute force Python developer, nitpicker.
--  [Steve Earl](https://github.com/SteveEarl-AWS): (Converted) Python code developer, (Formerly) NodeJS code developer, KVS processing magician, remodeler of cabins.
--  [Rob Pittfield](https://github.com/robpittfield2): Load testing mastermind, community relations, professional-grade sanity checker, herder of cats.
+```powershell
+# Create directories for packaging
+mkdir -p LambdaPackages
+mkdir -p python_layer/python
+
+# Create the Python layer with ALL required dependencies
+# CRITICAL: This is the most important step to get right!
+
+# Install external dependencies
+pip install boto3>=1.26.0 requests>=2.28.1 aws-lambda-powertools>=2.15.0 cffi>=1.15.1 phonenumbers>=8.12.0 -t python_layer/python/
+
+# Copy the Kinesis Video Streams library
+mkdir -p python_layer/python/amazon_kinesis_video_consumer_library
+Copy-Item -Path ".\Code\Core\amazon_kinesis_video_consumer_library\*" -Destination "python_layer/python/amazon_kinesis_video_consumer_library" -Recurse
+
+# Copy ALL Python modules to the layer
+# This ensures all necessary imports will work in Lambda functions
+Copy-Item -Path ".\Code\Core\*.py" -Destination "python_layer\python\"
+
+# Create the layer zip with the correct structure
+cd python_layer
+Compress-Archive -Path "python" -DestinationPath "../LambdaPackages/vmx3_common_python.zip" -Force
+cd ..
+
+# Create individual Lambda function zip files
+Compress-Archive -Path ".\Code\Core\vmx3_ses_template_tool.py" -DestinationPath ".\LambdaPackages\vmx3_ses_template_tool.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_guided_flow_presigner.py" -DestinationPath ".\LambdaPackages\vmx3_guided_flow_presigner.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_kvs_to_s3.py" -DestinationPath ".\LambdaPackages\vmx3_kvs_to_s3.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_packager.py" -DestinationPath ".\LambdaPackages\vmx3_packager.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_presigner.py" -DestinationPath ".\LambdaPackages\vmx3_presigner.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_transcriber.py" -DestinationPath ".\LambdaPackages\vmx3_transcriber.py.zip" -Force
+Compress-Archive -Path ".\Code\Core\vmx3_transcription_error_handler.py" -DestinationPath ".\LambdaPackages\vmx3_transcription_error_handler.py.zip" -Force
+
+# Upload all packages to S3
+aws s3 cp .\LambdaPackages\ s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --recursive --profile ops
+
+# Verify the uploads
+aws s3 ls s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+```
+
+### 7. Deploy the CloudFormation Stack
+Deploy the main template using the AWS CLI:
+
+```powershell
+aws cloudformation deploy `
+  --template-file CloudFormation/vmx3.yaml `
+  --stack-name dev-1159-voicemail-VMX3 `
+  --parameter-overrides file://CloudFormation/parameters/dev-parameters.json `
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
+  --profile ops
+```
+
+### 8. Monitor Deployment
+Monitor the deployment progress in the AWS CloudFormation console or using the AWS CLI:
+
+```powershell
+aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops
+```
+
+## Update Steps
+
+This walk-through is for manual dev updates. More mature CI/CD processes are in the backlog, along with deploying a prod environment.
+
+### 1. Make Changes to Template Files
+First, modify the necessary CloudFormation template files. Common updates include:
+- Adding or modifying call flow resources in `vmx3-contactflows.yaml`
+- Updating Lambda functions in `vmx3-lambda-functions.yaml`
+- Changing IAM policy definitions in `vmx3-policy-builder.yaml`
+
+### 2. Upload Updated Templates to S3
+After making your changes, upload the modified templates to the source S3 bucket:
+
+```powershell
+# Upload modified templates to S3
+aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+
+# For Lambda function updates, rebuild and upload packages if needed
+Compress-Archive -Path ".\Code\Core\vmx3_some_function.py" -DestinationPath ".\LambdaPackages\vmx3_some_function.py.zip" -Force
+aws s3 cp .\LambdaPackages\vmx3_some_function.py.zip s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+```
+
+### 3. Deploy the Stack Update
+Once all modified files are uploaded to S3, run the CloudFormation deploy command to update the stack:
+
+```powershell
+aws cloudformation deploy `
+  --template-file CloudFormation/vmx3.yaml `
+  --stack-name dev-1159-voicemail-VMX3 `
+  --parameter-overrides file://CloudFormation/parameters/dev-parameters.json `
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
+  --profile ops `
+  --no-fail-on-empty-changeset
+```
+
+The `--no-fail-on-empty-changeset` flag ensures the command won't error out if no changes are detected.
+
+### 4. Monitor Update Progress
+Track the update progress using the AWS CLI or the CloudFormation console:
+
+```powershell
+aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops
+```
+
+### Important Notes About Updates
+
+- **Partial Updates**: The parent stack (vmx3.yaml) will only update the nested stacks containing modified templates.
+- **S3 Dependency**: Always upload to S3 before deploying, as the parent stack references templates from S3, not local files.
+- **Testing**: After updating, perform smoke testing to verify that all components still work correctly.
+- **Rollback**: CloudFormation will automatically roll back changes if an update fails.
+
+### Troubleshooting Updates
+
+If the update fails, check the CloudFormation events for the specific error:
+
+```powershell
+aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops | Select-String -Pattern "FAILED"
+```
+
+You can also check CloudWatch logs for any Lambda function errors that might have occurred during or after the update.
+
+## Lessons Learned and Key Implementation Details
+
+### Python Layer Structure
+
+1. **Layer Directory Structure**: AWS Lambda layers must have a specific structure:
+   ```
+   vmx3_common_python.zip
+   └── python/
+       ├── boto3/
+       ├── requests/
+       └── ... (all modules and libraries)
+   ```
+
+2. **Update the Python Layer**:
+   ```powershell
+   # Create a new version of the layer with all required modules
+   mkdir -p python_layer/python
+   pip install boto3>=1.26.0 requests>=2.28.1 aws-lambda-powertools>=2.15.0 cffi>=1.15.1 phonenumbers>=8.12.0 -t python_layer/python/
+   Copy-Item -Path ".\Code\Core\*.py" -Destination "python_layer\python\"
+   Copy-Item -Path ".\Code\Core\amazon_kinesis_video_consumer_library\*" -Destination "python_layer/python/amazon_kinesis_video_consumer_library" -Recurse
+   cd python_layer
+   Compress-Archive -Path "python" -DestinationPath "../LambdaPackages/vmx3_common_python.zip" -Force
+   cd ..
+   aws s3 cp .\LambdaPackages\vmx3_common_python.zip s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+   ```
+
+3. **Ensure Complete Module Inclusion**: You must include **ALL** Python modules from the Code/Core directory in the layer. Missing even one module will cause Lambda function imports to fail with errors like:
+   ```
+   Unable to import module 'vmx3_packager': No module named 'sub_connect_task'
+   ```
+
+4. **Update Lambda Functions to Use the Layer**
+
+### Smoke Testing Checklist
+After deployment, validate your implementation:
+
+- [x] Make test call and leave voicemail
+- [x] Verify recording is stored in S3
+- [x] Confirm transcription is created
+- [x] Check email delivery to correct department
+- [x] Validate presigned URLs for recordings work properly
+
+## Common Issues and Solutions
+
+### "No module named" Errors
+If you see "No module named" errors in CloudWatch logs:
+
+1. Ensure all Python modules from Code/Core are included in the Python layer
+2. Verify the layer is correctly structured with the `python/` directory at the root
+3. Confirm the Lambda functions are configured to use the layer
+
+### File Naming Conventions
+The CloudFormation templates expect specific file names:
+
+- Python layer zip must be named `vmx3_common_python.zip`
+- Lambda function zips must match the conventions in the templates (e.g., `vmx3_ses_template_tool.py.zip`)
+
+### Troubleshooting
+- Check CloudWatch logs for specific error messages
+- Verify S3 paths match what's expected in CloudFormation templates
+- Examine Lambda function configuration to ensure layers are correctly attached

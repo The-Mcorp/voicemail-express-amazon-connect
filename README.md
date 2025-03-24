@@ -12,7 +12,7 @@ This guide provides step-by-step instructions for deploying, updating, and troub
 - `{env}` is a placeholder for environment name, such as 'dev' or 'prod.'
 - `{region}` is a placeholder for the region of the Amazon Connect instance
 
-## Deployment Steps
+## New Environment Deployment Steps
 
 This section walks through setting up a new voicemail environment after prerequisites are met.
 
@@ -106,7 +106,6 @@ mkdir -p LambdaPackages
 mkdir -p python_layer/python
 
 # Create the Python layer with ALL required dependencies
-# CRITICAL: This is the most important step to get right!
 
 # Install external dependencies
 pip install boto3>=1.26.0 requests>=2.28.1 aws-lambda-powertools>=2.15.0 cffi>=1.15.1 phonenumbers>=8.12.0 -t python_layer/python/
@@ -158,6 +157,22 @@ Monitor the deployment progress in the AWS CloudFormation console or using the A
 ```powershell
 aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 --profile ops
 ```
+
+### 8. Configure Connect Instance
+After deploying the voicemail system, configure your Amazon Connect instance to use it:
+- New Connect instances: Following these steps will immediately enable voicemail functionality for your phone number.
+- Existing instances: Plan cutover carefully by:
+    - Testing in a development environment first
+    - Scheduling changes during low-traffic periods
+    - Understanding rollback strategy if needed
+
+Configuration Steps:
+
+1. Make sure all email addresses used for agents and/or FROM email addresses are (1) verified in SES and (2) set as the 'email' field in Amazon Connect instance users
+
+2. Update Connect Instance Data Streaming. After clicking on the Connect instance in the console, go to `Data streaming` and update `Kinesis Stream` to be the value of the `ConnectCTRStreamARN` parameter in CloudFormation\parameters\{env}-parameters.json.
+
+3. Within the Connect instance, go to `Phone numbers` --> click on the target phone number --> update `Contact flow / IVR` to be the one with 'VMX3' and 'Custom Flow' in it. Save Changes.
 
 ## Update Steps
 

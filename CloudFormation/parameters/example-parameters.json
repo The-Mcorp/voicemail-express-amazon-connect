@@ -1,0 +1,110 @@
+[
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "us-east-1"
+  },
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "your-connect-instance-alias"
+  },
+  {
+    "ParameterKey": "ConnectInstanceARN",
+    "ParameterValue": "arn:aws:connect:us-east-1:123456789012:instance/abcdef12-3456-7890-abcd-1234567890ab"
+  },
+  {
+    "ParameterKey": "VMXKVSStreamPrefix",
+    "ParameterValue": "your-amazon-connect-connect-instance-alias-contact-"
+  },
+  {
+    "ParameterKey": "ConnectCTRStreamARN",
+    "ParameterValue": "arn:aws:kinesis:us-east-1:123456789012:stream/your-connect-kinesis-data-stream"
+  },
+  {
+    "ParameterKey": "LambdaLoggingLevel",
+    "ParameterValue": "INFO"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectTask",
+    "ParameterValue": "no"
+  },
+  {
+    "ParameterKey": "EnableVMToEmail",
+    "ParameterValue": "yes"
+  },
+  {
+    "ParameterKey": "VMDefaultMode",
+    "ParameterValue": "AmazonSimpleEmailService"
+  },
+  {
+    "ParameterKey": "RecordingsExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "ExpiredRecordingBehavior",
+    "ParameterValue": "keep"
+  },
+  {
+    "ParameterKey": "GuidedTaskRecordingLinksExpireInXMinutes",
+    "ParameterValue": "10"
+  },
+  {
+    "ParameterKey": "TaskRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultFrom",
+    "ParameterValue": "connect@example.com"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultTo",
+    "ParameterValue": "default@example.com"
+  },
+  {
+    "ParameterKey": "VMAgentAddressKey",
+    "ParameterValue": "Email"
+  },
+  {
+    "ParameterKey": "VMTestAgentId",
+    "ParameterValue": "test-agent@example.com"
+  },
+  {
+    "ParameterKey": "VMTestQueueARN",
+    "ParameterValue": "arn:aws:connect:us-east-1:123456789012:instance/abcdef12-3456-7890-abcd-1234567890ab/queue/12345678-90ab-cdef-1234-567890abcdef"
+  },
+  {
+    "ParameterKey": "EXPTemplateVersion",
+    "ParameterValue": "2024.09.01"
+  },
+  {
+    "ParameterKey": "EmailRecordingLinksExpireInXDays",
+    "ParameterValue": "7"
+  },
+  {
+    "ParameterKey": "ClientServicesAgentEmail",
+    "ParameterValue": "client-services@example.com"
+  },
+  {
+    "ParameterKey": "SalesAgentEmail",
+    "ParameterValue": "sales@example.com"
+  },
+  {
+    "ParameterKey": "MarketingAgentEmail",
+    "ParameterValue": "marketing@example.com"
+  },
+  {
+    "ParameterKey": "HRAgentEmail",
+    "ParameterValue": "hr@example.com"
+  },
+  {
+    "ParameterKey": "OtherAgentEmail",
+    "ParameterValue": "general@example.com"
+  },
+  {
+    "ParameterKey": "EXPDevBucketPrefix",
+    "ParameterValue": "env-vmx3-"
+  }
+]

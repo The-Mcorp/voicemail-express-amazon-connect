@@ -262,21 +262,21 @@ Resources:
                 "y": -38.4
               },
               "ActionMetadata": {
-                "Main test flow greeting": {
+                "Custom Flow Greeting": {
                   "position": {
                     "x": 81.6,
                     "y": -40.8
                   },
                   "isFriendlyName": true
                 },
-                "End Test": {
+                "End Call": {
                   "position": {
                     "x": 1544.8,
                     "y": 671.2
                   },
                   "isFriendlyName": true
                 },
-                "Set all of the test attributes": {
+                "Set VMX Attributes": {
                   "position": {
                     "x": -188.8,
                     "y": -42.4
@@ -364,7 +364,7 @@ Resources:
                   },
                   "isFriendlyName": true
                 },
-                "Set the destination type": {
+                "Set Call Menu Choice": {
                   "position": {
                     "x": 76,
                     "y": 350.4
@@ -433,7 +433,7 @@ Resources:
                   },
                   "useDynamic": true
                 },
-                "Set remaining required attributes for VMX3": {
+                "Set Remaining VMX3 Attributes": {
                   "position": {
                     "x": 811.2,
                     "y": 270.4
@@ -462,7 +462,7 @@ Resources:
                 "Parameters": {
                   "SSML": "<prosody rate=\"110%\"> Thanks for calling eleven-fiftynine!</prosody>"
                 },
-                "Identifier": "Main test flow greeting",
+                "Identifier": "Custom Flow Greeting",
                 "Type": "MessageParticipant",
                 "Transitions": {
                   "NextAction": "Set email delivery mode",
@@ -476,26 +476,24 @@ Resources:
               },
               {
                 "Parameters": {},
-                "Identifier": "End Test",
+                "Identifier": "End Call",
                 "Type": "DisconnectParticipant",
                 "Transitions": {}
               },
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_core_module": "${VMCUSTOMCOREFLOWMODULE}",
-                    "vmx3_task_flow": "EXAMPLE",
-                    "vmx3_guided_task_flow": "EXAMPLE"
+                    "vmx3_core_module": "${VMCUSTOMCOREFLOWMODULE}"
                   },
                   "TargetContact": "Current"
                 },
-                "Identifier": "Set all of the test attributes",
+                "Identifier": "Set VMX Attributes",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
-                  "NextAction": "Main test flow greeting",
+                  "NextAction": "Custom Flow Greeting",
                   "Errors": [
                     {
-                      "NextAction": "Main test flow greeting",
+                      "NextAction": "Custom Flow Greeting",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -508,7 +506,7 @@ Resources:
                 "Identifier": "Turn on flow logging",
                 "Type": "UpdateFlowLoggingBehavior",
                 "Transitions": {
-                  "NextAction": "Set all of the test attributes"
+                  "NextAction": "Set VMX Attributes"
                 }
               },
               {
@@ -553,10 +551,10 @@ Resources:
                 "Identifier": "Set email delivery mode",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
-                  "NextAction": "Set the destination type",
+                  "NextAction": "Set Call Menu Choice",
                   "Errors": [
                     {
-                      "NextAction": "Set the destination type",
+                      "NextAction": "Set Call Menu Choice",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -656,7 +654,7 @@ Resources:
                   "NextAction": "Error message",
                   "Conditions": [
                     {
-                      "NextAction": "Set the destination type",
+                      "NextAction": "Set Call Menu Choice",
                       "Condition": {
                         "Operator": "Equals",
                         "Operands": [
@@ -683,10 +681,10 @@ Resources:
                 "Identifier": "Error message",
                 "Type": "MessageParticipant",
                 "Transitions": {
-                  "NextAction": "End Test",
+                  "NextAction": "End Call",
                   "Errors": [
                     {
-                      "NextAction": "End Test",
+                      "NextAction": "End Call",
                       "ErrorType": "NoMatchingError"
                     }
                   ]
@@ -698,7 +696,7 @@ Resources:
                   "InputTimeLimitSeconds": "20",
                   "Text": "Please press 1 for client services, 2 for sales, 3 for marketing, 4 for human resources, and 5 for all other inquiries. To repeat this menu, press 9."
                 },
-                "Identifier": "Set the destination type",
+                "Identifier": "Set Call Menu Choice",
                 "Type": "GetParticipantInput",
                 "Transitions": {
                   "NextAction": "193189dc-9ede-41fb-acb3-e8271d36e8c9",
@@ -822,7 +820,7 @@ Resources:
                 "Identifier": "Set agent queue",
                 "Type": "UpdateContactTargetQueue",
                 "Transitions": {
-                  "NextAction": "Set remaining required attributes for VMX3",
+                  "NextAction": "Set Remaining VMX3 Attributes",
                   "Errors": [
                     {
                       "NextAction": "Error message",
@@ -840,7 +838,7 @@ Resources:
                   },
                   "TargetContact": "Current"
                 },
-                "Identifier": "Set remaining required attributes for VMX3",
+                "Identifier": "Set Remaining VMX3 Attributes",
                 "Type": "UpdateContactAttributes",
                 "Transitions": {
                   "NextAction": "Play Department Prompt",

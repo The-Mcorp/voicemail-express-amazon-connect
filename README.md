@@ -2,6 +2,8 @@
 
 Forked from [amazon-connect/voicemail-express-amazon-connect](https://github.com/The-Mcorp/voicemail-express-amazon-connect). Updated to incorporate custom Connect Flows/Modules for department-based routing.
 
+![Voicemail Express Architecture](Docs/Img/VMX3.png)
+
 ## Overview
 This guide provides step-by-step instructions for deploying, updating, and troubleshooting 11:59's Amazon Connect Voicemail solution through AWS CloudFormation.
 

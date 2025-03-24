@@ -565,7 +565,7 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${ClientServicesAgentEmail}",
+                    "vmx3_agent": "${ClientServicesAgentEmail}",
                     "vmx3_department": "ClientServices",
                     "department_audio_url": "s3://${VMXBucket}/prompts/ClientServices.wav"
                   },
@@ -586,7 +586,7 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${SalesAgentEmail}",
+                    "vmx3_agent": "${SalesAgentEmail}",
                     "vmx3_department": "Sales",
                     "department_audio_url": "s3://${VMXBucket}/prompts/Sales.wav"
                   },
@@ -607,7 +607,7 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${MarketingAgentEmail}",
+                    "vmx3_agent": "${MarketingAgentEmail}",
                     "vmx3_department": "Marketing",
                     "department_audio_url": "https://${VMXBucket}.s3.${AWS::Region}.amazonaws.com/prompts/Marketing.wav"
                   },
@@ -628,7 +628,7 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${OtherAgentEmail}",
+                    "vmx3_agent": "${OtherAgentEmail}",
                     "vmx3_department": "GeneralInquiries",
                     "department_audio_url": "s3://${VMXBucket}/prompts/GeneralInquiries.wav"
                   },
@@ -777,7 +777,7 @@ Resources:
               {
                 "Parameters": {
                   "Attributes": {
-                    "vmx3_test_agent": "${HRAgentEmail}",
+                    "vmx3_agent": "${HRAgentEmail}",
                     "vmx3_department": "HumanResources",
                     "department_audio_url": "https://${VMXBucket}.s3.${AWS::Region}.amazonaws.com/prompts/HumanResources.wav"
                   },
@@ -817,7 +817,7 @@ Resources:
               },
               {
                 "Parameters": {
-                  "AgentId": "$.Attributes.vmx3_test_agent"
+                  "AgentId": "$.Attributes.vmx3_agent"
                 },
                 "Identifier": "Set agent queue",
                 "Type": "UpdateContactTargetQueue",

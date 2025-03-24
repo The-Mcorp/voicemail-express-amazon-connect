@@ -5,14 +5,16 @@ Forked from [amazon-connect/voicemail-express-amazon-connect](https://github.com
 ## Overview
 This guide provides step-by-step instructions for deploying, updating, and troubleshooting 11:59's Amazon Connect Voicemail solution through AWS CloudFormation.
 
-## Prerequisites
-- AWS CLI installed and configured
-- Access to an AWS account with appropriate permissions
-- Amazon Connect instance already set up
+## Prerequisites & Assumptions
+- AWS CLI installed and configured. The profile name is assumed to be  `ops` (e.g., --profile ops).
+- Proper access is granted to 11:59's ops account
+- An Amazon Connect instance already set up
+- `{env}` is a placeholder for environment name, such as 'dev' or 'prod.'
+- `{region}` is a placeholder for the region of the Amazon Connect instance
 
 ## Deployment Steps
 
-This walks through deploying the dev environment. Replace any instance of dev with the new environment (e.g., prod)
+This section walks through setting up a new voicemail environment after prerequisites are met.
 
 ### 1. Set Up Project Structure
 Ensure you have the necessary files:
@@ -39,13 +41,13 @@ Ensure you have the necessary files:
 - Code/Core/sub_ses_email.py
 
 ### 2. Create Parameters File
-Create a file at `CloudFormation/parameters/dev-parameters.json` with the necessary parameters, including the department email addresses and the S3 bucket prefix.
+Create a file at `CloudFormation/parameters/{env}-parameters.json` with the necessary parameters, including department email(s) addresses and the S3 bucket prefix.
 
 ### 3. Create Source S3 Bucket (for CloudFormation Templates and Custom Prompts)
 Create an S3 bucket that matches the format specified in parameters (e.g., value of EXPDevBucketPrefix combined with -vmx-source-region):
 
 ```powershell
-aws s3 mb s3://dev-vmx3-vmx-source-us-east-1 --region us-east-1 --profile ops
+aws s3 mb s3://{env}-vmx3-vmx-source-{region} --region {region} --profile ops
 ```
 
 ### 4. Create Bucket Policy for Source S3 Bucket
@@ -66,13 +68,13 @@ aws s3 mb s3://dev-vmx3-vmx-source-us-east-1 --region us-east-1 --profile ops
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::dev-vmx3-vmx-source-us-east-1",
-                "arn:aws:s3:::dev-vmx3-vmx-source-us-east-1/*"
+                "arn:aws:s3:::{replace_with_your_bucket_name}",
+                "arn:aws:s3:::{replace_with_your_bucket_name}/*"
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:SourceArn": "arn:aws:connect:us-east-1:091070931078:instance/caf2f3d0-0fe6-4fb1-8a6b-6c080505e41d",
-                    "aws:SourceAccount": "091070931078"
+                    "aws:SourceArn": "arn:aws:connect:{region}:{accountId}:instance/aaf2f3d0-0fe6-4fb1-8a6b-4c080505e41d",
+                    "aws:SourceAccount": "{accountId}"
                 }
             }
         }
@@ -82,18 +84,18 @@ aws s3 mb s3://dev-vmx3-vmx-source-us-east-1 --region us-east-1 --profile ops
 
 ### 5. Upload Custom Department Prompts to Source S3 Bucket
 
-e.g., s3://dev-vmx3-vmx-source-us-east-1/prompts/ClientServices.wav
+e.g., s3://{env}-vmx3-vmx-source-{region}/prompts/ClientServices.wav
 
 ### 6. Upload Templates and Lambda Function Packages
 First, upload all CloudFormation templates to the correct location in S3:
 
 ```powershell
-aws s3 cp .\CloudFormation\vmx3-core.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
-aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
-aws s3 cp .\CloudFormation\vmx3-lambda-functions.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
-aws s3 cp .\CloudFormation\vmx3-policy-builder.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
-aws s3 cp .\CloudFormation\vmx3-ses-setup.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
-aws s3 cp .\CloudFormation\vmx3-triggers.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-core.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-lambda-functions.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-policy-builder.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-ses-setup.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-triggers.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
 ```
 
 Next, prepare and upload the Lambda function code:
@@ -132,10 +134,10 @@ Compress-Archive -Path ".\Code\Core\vmx3_transcriber.py" -DestinationPath ".\Lam
 Compress-Archive -Path ".\Code\Core\vmx3_transcription_error_handler.py" -DestinationPath ".\LambdaPackages\vmx3_transcription_error_handler.py.zip" -Force
 
 # Upload all packages to S3
-aws s3 cp .\LambdaPackages\ s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --recursive --profile ops
+aws s3 cp .\LambdaPackages\ s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --recursive --profile ops
 
 # Verify the uploads
-aws s3 ls s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+aws s3 ls s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
 ```
 
 ### 7. Deploy the CloudFormation Stack
@@ -144,8 +146,8 @@ Deploy the main template using the AWS CLI:
 ```powershell
 aws cloudformation deploy `
   --template-file CloudFormation/vmx3.yaml `
-  --stack-name dev-1159-voicemail-VMX3 `
-  --parameter-overrides file://CloudFormation/parameters/dev-parameters.json `
+  --stack-name {env}-1159-voicemail-VMX3 `
+  --parameter-overrides file://CloudFormation/parameters/{env}-parameters.json `
   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
   --profile ops
 ```
@@ -154,12 +156,12 @@ aws cloudformation deploy `
 Monitor the deployment progress in the AWS CloudFormation console or using the AWS CLI:
 
 ```powershell
-aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops
+aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 --profile ops
 ```
 
 ## Update Steps
 
-This walk-through is for manual dev updates. More mature CI/CD processes are in the backlog, along with deploying a prod environment.
+This walk-through is for manual updates. More mature CI/CD processes are in the backlog, along with deploying a prod environment.
 
 ### 1. Make Changes to Template Files
 First, modify the necessary CloudFormation template files. Common updates include:
@@ -172,11 +174,11 @@ After making your changes, upload the modified templates to the source S3 bucket
 
 ```powershell
 # Upload modified templates to S3
-aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/cloudformation/ --profile ops
+aws s3 cp .\CloudFormation\vmx3-contactflows.yaml s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/cloudformation/ --profile ops
 
 # For Lambda function updates, rebuild and upload packages if needed
 Compress-Archive -Path ".\Code\Core\vmx3_some_function.py" -DestinationPath ".\LambdaPackages\vmx3_some_function.py.zip" -Force
-aws s3 cp .\LambdaPackages\vmx3_some_function.py.zip s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+aws s3 cp .\LambdaPackages\vmx3_some_function.py.zip s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
 ```
 
 ### 3. Deploy the Stack Update
@@ -185,8 +187,8 @@ Once all modified files are uploaded to S3, run the CloudFormation deploy comman
 ```powershell
 aws cloudformation deploy `
   --template-file CloudFormation/vmx3.yaml `
-  --stack-name dev-1159-voicemail-VMX3 `
-  --parameter-overrides file://CloudFormation/parameters/dev-parameters.json `
+  --stack-name {env}-1159-voicemail-VMX3 `
+  --parameter-overrides file://CloudFormation/parameters/{env}-parameters.json `
   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
   --profile ops `
   --no-fail-on-empty-changeset
@@ -198,7 +200,7 @@ The `--no-fail-on-empty-changeset` flag ensures the command won't error out if n
 Track the update progress using the AWS CLI or the CloudFormation console:
 
 ```powershell
-aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops
+aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 --profile ops
 ```
 
 ### Important Notes About Updates
@@ -213,7 +215,7 @@ aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --
 If the update fails, check the CloudFormation events for the specific error:
 
 ```powershell
-aws cloudformation describe-stack-events --stack-name dev-1159-voicemail-VMX3 --profile ops | Select-String -Pattern "FAILED"
+aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 --profile ops | Select-String -Pattern "FAILED"
 ```
 
 You can also check CloudWatch logs for any Lambda function errors that might have occurred during or after the update.
@@ -241,7 +243,7 @@ You can also check CloudWatch logs for any Lambda function errors that might hav
    cd python_layer
    Compress-Archive -Path "python" -DestinationPath "../LambdaPackages/vmx3_common_python.zip" -Force
    cd ..
-   aws s3 cp .\LambdaPackages\vmx3_common_python.zip s3://dev-vmx3-vmx-source-us-east-1/vmx3/2024.09.01/zip/ --profile ops
+   aws s3 cp .\LambdaPackages\vmx3_common_python.zip s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
    ```
 
 3. **Ensure Complete Module Inclusion**: You must include **ALL** Python modules from the Code/Core directory in the layer. Missing even one module will cause Lambda function imports to fail with errors like:
@@ -261,6 +263,14 @@ After deployment, validate your implementation:
 - [x] Validate presigned URLs for recordings work properly
 
 ## Common Issues and Solutions
+
+### Department Prompt is in S3, but the Fallback Prompt is Played:
+
+1. Verify 'error' in CloudWatch flow logs (if enabled)
+2. Make sure a `Set {Department} Agent` block is set up in the custom flow with `department_audio_url` set to the right s3 URL (e.g., `s3://{env}-vmx3-vmx-source-{region}/prompts/{Department}.wav`)
+3. Make sure the s3 bucket has a bucket policy enabled for Connect access
+4. Make sure that the S3 audio file adheres to AWS requirements. [Note U-Law encoding](https://docs.aws.amazon.com/connect/latest/adminguide/setup-prompts-s3.html)
+
 
 ### "No module named" Errors
 If you see "No module named" errors in CloudWatch logs:

@@ -42,17 +42,60 @@ Ensure you have the necessary files:
 - Code/Core/sub_connect_guided_task.py
 - Code/Core/sub_ses_email.py
 
-### 2. Create Parameters File
-Create a file at `CloudFormation/parameters/{env}-parameters.json` with the necessary parameters, including department email(s) addresses and the S3 bucket prefix.
+### 2. Configure AWS Systems Manager Parameter Store
+Create the necessary parameters in Parameter Store following this hierarchical structure:
 
-### 3. Create Source S3 Bucket (for CloudFormation Templates and Custom Prompts)
+```
+/1159-voicemail/{env}/AWSRegion
+/1159-voicemail/{env}/ConnectCTRStreamARN
+/1159-voicemail/{env}/EXPDevBucketPrefix
+...and other required parameters
+```
+
+You can use the AWS CLI to create these parameters:
+
+```powershell
+# Example: Setting up a parameter
+aws ssm put-parameter \
+    --name "/1159-voicemail/dev/AWSRegion" \
+    --value "us-east-1" \
+    --type "String" \
+    --profile ops
+```
+
+### 3. Create Parameters File
+Create a file at `CloudFormation/parameters/{env}-parameters.json` that references the environment and SSM parameter paths:
+
+```json
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "{env}"
+  },
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "/1159-voicemail/{env}/AWSRegion"
+  },
+  {
+    "ParameterKey": "ConnectCTRStreamARN",
+    "ParameterValue": "/1159-voicemail/{env}/ConnectCTRStreamARN"
+  },
+  {
+    "ParameterKey": "EXPDevBucketPrefix",
+    "ParameterValue": "/1159-voicemail/{env}/EXPDevBucketPrefix"
+  }
+  // Add all other required parameters
+]
+```
+
+### 4. Create Source S3 Bucket (for CloudFormation Templates and Custom Prompts)
 Create an S3 bucket that matches the format specified in parameters (e.g., value of EXPDevBucketPrefix combined with -vmx-source-region):
 
 ```powershell
 aws s3 mb s3://{env}-vmx3-vmx-source-{region} --region {region} --profile ops
 ```
 
-### 4. Create Bucket Policy for Source S3 Bucket
+### 5. Create Bucket Policy for Source S3 Bucket
 
 ```json
 {
@@ -75,7 +118,7 @@ aws s3 mb s3://{env}-vmx3-vmx-source-{region} --region {region} --profile ops
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:SourceArn": "arn:aws:connect:{region}:{accountId}:instance/aaf2f3d0-0fe6-4fb1-8a6b-4c080505e41d",
+                    "aws:SourceArn": "arn:aws:connect:{region}:{accountId}:instance/{replace_with_connect_instance_id}",
                     "aws:SourceAccount": "{accountId}"
                 }
             }
@@ -84,11 +127,11 @@ aws s3 mb s3://{env}-vmx3-vmx-source-{region} --region {region} --profile ops
 }
 ```
 
-### 5. Upload Custom Department Prompts to Source S3 Bucket
+### 6. Upload Custom Department Prompts to Source S3 Bucket
 
 e.g., s3://{env}-vmx3-vmx-source-{region}/prompts/ClientServices.wav
 
-### 6. Upload Templates and Lambda Function Packages
+### 7. Upload Templates and Lambda Function Packages
 First, upload all CloudFormation templates to the correct location in S3:
 
 ```powershell
@@ -141,7 +184,7 @@ aws s3 cp .\LambdaPackages\ s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/
 aws s3 ls s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
 ```
 
-### 7. Deploy the CloudFormation Stack
+### 8. Deploy the CloudFormation Stack
 Deploy the main template using the AWS CLI:
 
 ```powershell
@@ -153,14 +196,14 @@ aws cloudformation deploy `
   --profile ops
 ```
 
-### 8. Monitor Deployment
+### 9. Monitor Deployment
 Monitor the deployment progress in the AWS CloudFormation console or using the AWS CLI:
 
 ```powershell
 aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 --profile ops
 ```
 
-### 8. Configure Connect Instance
+### 10. Configure Connect Instance
 After deploying the voicemail system, configure your Amazon Connect instance to use it:
 - New Connect instances: Following these steps will immediately enable voicemail functionality for your phone number.
 - Existing instances: Plan cutover carefully by:
@@ -172,12 +215,20 @@ Configuration Steps:
 
 1. Make sure all email addresses used for agents and/or FROM email addresses are (1) verified in SES and (2) set as the 'email' field in Amazon Connect instance users
 
-2. Update Connect Instance Data Streaming. After clicking on the Connect instance in the console, go to `Data streaming` and update `Kinesis Stream` to be the value of the `ConnectCTRStreamARN` parameter in CloudFormation\parameters\{env}-parameters.json.
+2. Update Connect Instance Data Streaming. After clicking on the Connect instance in the console, go to `Data streaming` and update `Kinesis Stream` to be the value stored in the SSM parameter `/1159-voicemail/{env}/ConnectCTRStreamARN`.
 
 3. Within the Connect instance, go to `Phone numbers` --> click on the target phone number --> update `Contact flow / IVR` to be the one with 'VMX3' and 'Custom Flow' in it. Save Changes.
 
+### 11. Smoke Test
+After deployment, validate your implementation:
+- [ ] Make test call and leave voicemail
+- [ ] Verify recording is stored in S3
+- [ ] Confirm transcription is created
+- [ ] Check email delivery to correct department
+- [ ] Validate presigned URLs for recordings work properly
+
 ## Add or Update Stack Tags
-Tags are currently updated via command line, pending more mature CI/CD process.  Run a command similar to the one below to update tags:
+Tags are currently updated via command line, pending more mature CI/CD process. Run a command similar to the one below to update tags:
 
 ```powershell
 aws cloudformation deploy --template-file CloudFormation/vmx3.yaml --stack-name {env}-1159-voicemail-VMX3 --parameter-overrides file://CloudFormation/parameters/{env}-parameters.json --tags environment={env} createdBy=example.example@example.com project=Voicemail createdOn=03202025 --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --profile ops
@@ -185,15 +236,29 @@ aws cloudformation deploy --template-file CloudFormation/vmx3.yaml --stack-name 
 
 ## Update Stack
 
-This walk-through is for manual updates. More mature CI/CD processes are in the backlog, along with deploying a prod environment.
+This walk-through is for manual updates. More mature CI/CD processes are in the backlog.
 
 ### 1. Make Changes to Template Files
-First, modify the necessary CloudFormation template files. Common updates include:
+First, modify the necessary CloudFormation template files. Common updates may include:
 - Adding or modifying call flow resources in `vmx3-contactflows.yaml`
 - Updating Lambda functions in `vmx3-lambda-functions.yaml`
 - Changing IAM policy definitions in `vmx3-policy-builder.yaml`
 
-### 2. Upload Updated Templates to S3
+### 2. Update Parameter Store Values (if needed)
+If your changes require parameter updates, update the values in AWS Systems Manager Parameter Store:
+
+```powershell
+aws ssm put-parameter \
+    --name "/1159-voicemail/{env}/{ParameterName}" \
+    --value "{new-value}" \
+    --type "String" \
+    --overwrite \
+    --profile ops
+```
+
+Note: Since the application reads these configuration values at deployment, you must redeploy the CloudFormation stack after updating parameters for the changes to take effect. Simply updating the parameter values in SSM without redeploying will not update the running application configuration.
+
+### 3. Upload Updated Templates to S3
 After making your changes, upload the modified templates to the source S3 bucket:
 
 ```powershell
@@ -205,7 +270,7 @@ Compress-Archive -Path ".\Code\Core\vmx3_some_function.py" -DestinationPath ".\L
 aws s3 cp .\LambdaPackages\vmx3_some_function.py.zip s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
 ```
 
-### 3. Deploy the Stack Update
+### 4. Deploy the Stack Update
 Once all modified files are uploaded to S3, run the CloudFormation deploy command to update the stack:
 
 ```powershell
@@ -220,7 +285,7 @@ aws cloudformation deploy `
 
 The `--no-fail-on-empty-changeset` flag ensures the command won't error out if no changes are detected.
 
-### 4. Monitor Update Progress
+### 5. Monitor Update Progress
 Track the update progress using the AWS CLI or the CloudFormation console:
 
 ```powershell
@@ -233,6 +298,7 @@ aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 
 - **S3 Dependency**: Always upload to S3 before deploying, as the parent stack references templates from S3, not local files.
 - **Testing**: After updating, perform smoke testing to verify that all components still work correctly.
 - **Rollback**: CloudFormation will automatically roll back changes if an update fails.
+- **Parameter Store**: Changes to Parameter Store values will take effect during the next stack update.
 
 ### Troubleshooting Updates
 
@@ -243,113 +309,3 @@ aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 
 ```
 
 You can also check CloudWatch logs for any Lambda function errors that might have occurred during or after the update.
-
-
-## Lessons Learned and Key Implementation Details
-
-### Python Layer Structure
-
-1. **Layer Directory Structure**: AWS Lambda layers must have a specific structure:
-   ```
-   vmx3_common_python.zip
-   └── python/
-       ├── boto3/
-       ├── requests/
-       └── ... (all modules and libraries)
-   ```
-
-2. **Update the Python Layer**:
-   ```powershell
-   # Create a new version of the layer with all required modules
-   mkdir -p python_layer/python
-   pip install boto3>=1.26.0 requests>=2.28.1 aws-lambda-powertools>=2.15.0 cffi>=1.15.1 phonenumbers>=8.12.0 -t python_layer/python/
-   Copy-Item -Path ".\Code\Core\*.py" -Destination "python_layer\python\"
-   Copy-Item -Path ".\Code\Core\amazon_kinesis_video_consumer_library\*" -Destination "python_layer/python/amazon_kinesis_video_consumer_library" -Recurse
-   cd python_layer
-   Compress-Archive -Path "python" -DestinationPath "../LambdaPackages/vmx3_common_python.zip" -Force
-   cd ..
-   aws s3 cp .\LambdaPackages\vmx3_common_python.zip s3://{env}-vmx3-vmx-source-{region}/vmx3/2024.09.01/zip/ --profile ops
-   ```
-
-3. **Ensure Complete Module Inclusion**: You must include **ALL** Python modules from the Code/Core directory in the layer. Missing even one module will cause Lambda function imports to fail with errors like:
-   ```
-   Unable to import module 'vmx3_packager': No module named 'sub_connect_task'
-   ```
-
-4. **Update Lambda Functions to Use the Layer**
-
-### Smoke Testing Checklist
-After deployment, validate your implementation:
-
-- [x] Make test call and leave voicemail
-- [x] Verify recording is stored in S3
-- [x] Confirm transcription is created
-- [x] Check email delivery to correct department
-- [x] Validate presigned URLs for recordings work properly
-
-## Common Issues and Solutions
-
-### Department Prompt is in S3, but the Fallback Prompt is Played:
-
-1. Verify 'error' in CloudWatch flow logs (if enabled)
-2. Make sure a `Set {Department} Agent` block is set up in the custom flow with `department_audio_url` set to the right s3 URL (e.g., `s3://{env}-vmx3-vmx-source-{region}/prompts/{Department}.wav`)
-3. Make sure the s3 bucket has a bucket policy enabled for Connect access
-4. Make sure that the S3 audio file adheres to AWS requirements. [Note U-Law encoding](https://docs.aws.amazon.com/connect/latest/adminguide/setup-prompts-s3.html)
-
-
-### "No module named" Errors
-If you see "No module named" errors in CloudWatch logs:
-
-1. Ensure all Python modules from Code/Core are included in the Python layer
-2. Verify the layer is correctly structured with the `python/` directory at the root
-3. Confirm the Lambda functions are configured to use the layer
-
-### File Naming Conventions
-The CloudFormation templates expect specific file names:
-
-- Python layer zip must be named `vmx3_common_python.zip`
-- Lambda function zips must match the conventions in the templates (e.g., `vmx3_ses_template_tool.py.zip`)
-
-### Troubleshooting
-- Check CloudWatch logs for specific error messages
-- Verify S3 paths match what's expected in CloudFormation templates
-- Examine Lambda function configuration to ensure layers are correctly attached
-
-## Current Work: Parameter Store Integration
-
-### Overview
-I've successfully migrated from local CloudFormation parameter files to AWS Systems Manager Parameter Store for improved security and configuration management. This approach enables multi-environment deployments from a single template while allowing low-code parameter changes.
-
-### Implementation Details
-
-#### Parameter Hierarchy
-- Parameters are stored in a hierarchical structure: `/1159-voicemail/{env}/{ParameterName}`
-- This organization enables environment-specific configuration and granular access control
-
-#### CloudFormation Integration
-- Updated CloudFormation templates to use `AWS::SSM::Parameter::Value<Type>` parameter types
-- Environment-specific parameter files reference SSM parameter paths instead of direct values
-- Example:
-    ```yaml
-    AWSRegion:
-    Type: "AWS::SSM::Parameter::Value<String>"
-    ```
-#### Environment-Specific Parameter Files
-- Created environment-specific parameter files (e.g., `dev-parameters.json`, `prod-parameters.json`) 
-- Files contain SSM parameter path references rather than actual values:
-    ```json
-    {
-    "ParameterKey": "AWSRegion",
-    "ParameterValue": "/1159-voicemail/dev/AWSRegion"
-    }
-    ```
-#### Updated Deployment Process
-
-```powershell
-aws cloudformation deploy `
---template-file CloudFormation/vmx3.yaml `
---stack-name {env}-1159-voicemail-VMX3 `
---parameter-overrides file://CloudFormation/parameters/{env}-parameters.json `
---capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
---profile ops
-```

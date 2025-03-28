@@ -314,3 +314,42 @@ The CloudFormation templates expect specific file names:
 - Check CloudWatch logs for specific error messages
 - Verify S3 paths match what's expected in CloudFormation templates
 - Examine Lambda function configuration to ensure layers are correctly attached
+
+## Current Work: Parameter Store Integration
+
+### Overview
+I've successfully migrated from local CloudFormation parameter files to AWS Systems Manager Parameter Store for improved security and configuration management. This approach enables multi-environment deployments from a single template while allowing low-code parameter changes.
+
+### Implementation Details
+
+#### Parameter Hierarchy
+- Parameters are stored in a hierarchical structure: `/1159-voicemail/{env}/{ParameterName}`
+- This organization enables environment-specific configuration and granular access control
+
+#### CloudFormation Integration
+- Updated CloudFormation templates to use `AWS::SSM::Parameter::Value<Type>` parameter types
+- Environment-specific parameter files reference SSM parameter paths instead of direct values
+- Example:
+    ```yaml
+    AWSRegion:
+    Type: "AWS::SSM::Parameter::Value<String>"
+    ```
+#### Environment-Specific Parameter Files
+- Created environment-specific parameter files (e.g., `dev-parameters.json`, `prod-parameters.json`) 
+- Files contain SSM parameter path references rather than actual values:
+    ```json
+    {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "/1159-voicemail/dev/AWSRegion"
+    }
+    ```
+#### Updated Deployment Process
+
+```powershell
+aws cloudformation deploy `
+--template-file CloudFormation/vmx3.yaml `
+--stack-name {env}-1159-voicemail-VMX3 `
+--parameter-overrides file://CloudFormation/parameters/{env}-parameters.json `
+--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
+--profile ops
+```

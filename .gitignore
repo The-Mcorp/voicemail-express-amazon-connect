@@ -28,8 +28,3 @@ ENV/
 # AWS SAM CLI
 .aws-sam/
 samconfig.toml
-
-# Deployment parameters (may contain sensitive info)
-CloudFormation/parameters/*-parameters.json
-# But keep example file
-!CloudFormation/parameters/example-parameters.json

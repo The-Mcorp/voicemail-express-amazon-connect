@@ -14,7 +14,7 @@ This guide provides step-by-step instructions for deploying, updating, and troub
 - `{env}` is a placeholder for environment name, such as 'dev' or 'prod.'
 - `{region}` is a placeholder for the region of the Amazon Connect instance
 
-## New Environment Deployment Steps
+## New Environment Deployment
 
 This section walks through setting up a new voicemail environment after prerequisites are met.
 
@@ -176,7 +176,14 @@ Configuration Steps:
 
 3. Within the Connect instance, go to `Phone numbers` --> click on the target phone number --> update `Contact flow / IVR` to be the one with 'VMX3' and 'Custom Flow' in it. Save Changes.
 
-## Update Steps
+## Add or Update Stack Tags
+Tags are currently updated via command line, pending more mature CI/CD process.  Run a command similar to the one below to update tags:
+
+```powershell
+aws cloudformation deploy --template-file CloudFormation/vmx3.yaml --stack-name {env}-1159-voicemail-VMX3 --parameter-overrides file://CloudFormation/parameters/{env}-parameters.json --tags environment={env} createdBy=example.example@example.com project=Voicemail createdOn=03202025 --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --profile ops
+```
+
+## Update Stack
 
 This walk-through is for manual updates. More mature CI/CD processes are in the backlog, along with deploying a prod environment.
 
@@ -236,6 +243,7 @@ aws cloudformation describe-stack-events --stack-name {env}-1159-voicemail-VMX3 
 ```
 
 You can also check CloudWatch logs for any Lambda function errors that might have occurred during or after the update.
+
 
 ## Lessons Learned and Key Implementation Details
 
@@ -306,3 +314,42 @@ The CloudFormation templates expect specific file names:
 - Check CloudWatch logs for specific error messages
 - Verify S3 paths match what's expected in CloudFormation templates
 - Examine Lambda function configuration to ensure layers are correctly attached
+
+## Current Work: Parameter Store Integration
+
+### Overview
+I've successfully migrated from local CloudFormation parameter files to AWS Systems Manager Parameter Store for improved security and configuration management. This approach enables multi-environment deployments from a single template while allowing low-code parameter changes.
+
+### Implementation Details
+
+#### Parameter Hierarchy
+- Parameters are stored in a hierarchical structure: `/1159-voicemail/{env}/{ParameterName}`
+- This organization enables environment-specific configuration and granular access control
+
+#### CloudFormation Integration
+- Updated CloudFormation templates to use `AWS::SSM::Parameter::Value<Type>` parameter types
+- Environment-specific parameter files reference SSM parameter paths instead of direct values
+- Example:
+    ```yaml
+    AWSRegion:
+    Type: "AWS::SSM::Parameter::Value<String>"
+    ```
+#### Environment-Specific Parameter Files
+- Created environment-specific parameter files (e.g., `dev-parameters.json`, `prod-parameters.json`) 
+- Files contain SSM parameter path references rather than actual values:
+    ```json
+    {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "/1159-voicemail/dev/AWSRegion"
+    }
+    ```
+#### Updated Deployment Process
+
+```powershell
+aws cloudformation deploy `
+--template-file CloudFormation/vmx3.yaml `
+--stack-name {env}-1159-voicemail-VMX3 `
+--parameter-overrides file://CloudFormation/parameters/{env}-parameters.json `
+--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND `
+--profile ops
+```

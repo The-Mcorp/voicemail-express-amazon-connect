@@ -137,88 +137,45 @@ Metadata:
 
 Parameters:
   AWSRegion:
-    Type: String
-    Default: us-east-1
-    AllowedValues:
-      - us-east-1
-      - us-west-2
-      - af-south-1
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-northeast-1
-      - ap-northeast-2
-      - ca-central-1
-      - eu-central-1
-      - eu-west-2
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: All resources for this template must reside in the same region.
       Validate which region your Amazon Connect instance is deployed in and
       select the corresponding region from the drop-down list. You should run
       this template from this region as well.
   ConnectCTRStreamARN:
-    Type: String
-    Default: Looks like - arn:aws:kinesis:REGION:ACCOUNT:stream/REPLACEME
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Provide the ARN for the Kinesis Data Stream that receives your
       contact records. This solution is only designed for Amazon Kinesis Data
       Streams, not Kinesis Data Firehose.
   ConnectInstanceAlias:
-    Type: String
-    Default: REPLACEME
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       Provide the instance alias for your Amazon Connect instance. You
       can find this in the in the AWS Console for Amazon Connect. It is shown in
       the list of instances. Please use lowercase letters ONLY.
   ConnectInstanceARN:
-    Type: String
-    Default: Looks like - arn:aws:connect:REGION:ACCOUNT:instance/REPLACEME
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Provide the instance ARN for your Amazon Connect istance.
   EXPDevBucketPrefix:
-    Type: String
-    Default: ""
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Not required and only used for development purposes.
   VMXKVSStreamPrefix:
-    Type: String
-    Default: "Looks like - PREFIX-connect-ALIAS-contact-"
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: The full prefix for the KVS streams. You can find this in the Connect Console at Data Storage > Live media Streaming > Kinesis video stream prefix.
   EmailRecordingLinksExpireInXDays:
-    Type: String
-    Default: 1
-    AllowedValues:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Set the number of days.
   TaskRecordingLinksExpireInXDays:
-    Type: String
-    Default: 1
-    AllowedValues:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-    Description: Select the number of days.
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Description: Select the number of days. Options- '1' to '7'
   EnableVMToConnectTask:
-    Type: String
-    Default: "no"
-    AllowedValues:
-      - "yes"
-      - "no"
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       Allow voicemails to be delivered to agents as Amazon Connect Tasks.
       Works with Agent Workspace, CCP, or streams. Incoming task will contain
       the transcript and a presigned URL to the recording.
   EnableVMToConnectGuidedTask:
-    Type: String
-    Default: "yes"
-    AllowedValues:
-      - "yes"
-      - "no"
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       Allow voicemails to be delivered to agents as Amazon Connect Guided
       Tasks. Similar to a normal Task, however the presentation of the voicemail
@@ -226,112 +183,76 @@ Parameters:
       requires the agent to use the Agent Workspace or a custom UI that
       incoporates agent guides.
   EnableVMToEmail:
-    Type: String
-    Default: "no"
-    AllowedValues:
-      - "yes"
-      - "no"
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Allow voicemails to be delivered to agents as external Emails.
       These will not be tracked or routed via Amazon Connect.
   ExpiredRecordingBehavior:
-    Type: String
-    Default: delete
-    AllowedValues:
-      - delete
-      - keep
-      - glacier
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       When recordings expire, do you want to delete the recording, keep
-      it, or move it to Glacier?
+      it, or move it to Glacier? Options- 'delete', 'keep', 'glacier'
   EXPTemplateVersion:
-    Type: String
-    Default: 2024.09.01
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Template version. ONLY change if you have built a custom version.
   GuidedTaskRecordingLinksExpireInXMinutes:
-    Type: String
-    Default: 2
-    AllowedValues:
-      - 2
-      - 5
-      - 10
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Number of minutes recordings are accessible via link. This is
       limited by the maximum amount of time that a presigned URL can be active.
+      Options- '2', '5', '10'
   LambdaLoggingLevel:
-    Type: String
-    Default: INFO
-    AllowedValues:
-      - ERROR
-      - WARN
-      - INFO
-      - DEBUG
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       Default is Info. This can be changed later. Details on logging can
       be found at
       https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html#monitoring-cloudwatchlogs-runtime-logging
   RecordingsExpireInXDays:
-    Type: String
-    Default: 7
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Number of days recordings are saved before they are lifecycled.
       Once this limit hits, the recording file will be lifecycled in the manner
       that you have selected.
   VMAgentAddressKey:
-    Type: String
-    Default: Email
-    AllowedValues:
-      - Email
-      - SecondaryEmail
-      - Username
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Typically, SAML uses SecondaryEmail and Non-SAML configs use
       Email.  Or, if you set the Username value to the agent e-mail address,
-      select Username.
+      select Username. Options- 'Email', 'SecondaryEmail', 'Username'
   VMDefaultMode:
-    Type: String
-    Default: AmazonConnectGuidedTask
-    AllowedValues:
-      - AmazonConnectGuidedTask
-      - AmazonConnectTask
-      - AmazonSimpleEmailService
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       If no other voicemail delivery model can be identified, which model
-      should be used?
+      should be used? Options- 'AmazonConnectGuidedTask', 'AmazonConnectTask', 'AmazonSimpleEmailService'
   VMToEmailDefaultFrom:
-    Type: String
-    Default: voicemail_from@test.com
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address to use when sending voicemails when another FROM
       address could not be identified. This will also be configured as the test
       FROM address.
   VMToEmailDefaultTo:
-    Type: String
-    Default: voicemail_to@test.com
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       Email address to receive voicemails where another TO address could
       not be identified. This will also be configured as the test TO address.
   VMTestAgentId:
-    Type: String
-    Default: Looks like - jdoe or jdoe@test.com
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Agent ID to use for the voicemail test function.
   VMTestQueueARN:
-    Type: String
-    Default: Looks like -
-      arn:aws:connect:REGION:ACCOUNT:instance/INSTANCEID/queue/QUEUEID
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description:
       The Queue ARN can be found in the Amazon Connect UI by navigating
       to Routing > Queue, choosing the queue, then expanding the 'Show
-      additional queue information' section.
+      additional queue information' section. Found within Connect instance.
   ClientServicesAgentEmail:
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address for the Client Services voicemail delivery
   SalesAgentEmail:
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address for the Sales voicemail delivery
   MarketingAgentEmail:
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address for the Marketing voicemail delivery
   HRAgentEmail:
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address for the Human Resources voicemail delivery
   OtherAgentEmail:
-    Type: String
+    Type: "AWS::SSM::Parameter::Value<String>"
     Description: Email address for General Inquiries voicemail delivery
 
 Conditions:

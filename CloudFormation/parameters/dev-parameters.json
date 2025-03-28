@@ -1,0 +1,114 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "/1159-voicemail/dev/AWSRegion"
+  },
+  {
+    "ParameterKey": "ConnectInstanceAlias",
+    "ParameterValue": "/1159-voicemail/dev/ConnectInstanceAlias"
+  },
+  {
+    "ParameterKey": "ConnectInstanceARN",
+    "ParameterValue": "/1159-voicemail/dev/ConnectInstanceARN"
+  },
+  {
+    "ParameterKey": "VMXKVSStreamPrefix",
+    "ParameterValue": "/1159-voicemail/dev/VMXKVSStreamPrefix"
+  },
+  {
+    "ParameterKey": "ConnectCTRStreamARN",
+    "ParameterValue": "/1159-voicemail/dev/ConnectCTRStreamARN"
+  },
+  {
+    "ParameterKey": "LambdaLoggingLevel",
+    "ParameterValue": "/1159-voicemail/dev/LambdaLoggingLevel"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectGuidedTask",
+    "ParameterValue": "/1159-voicemail/dev/EnableVMToConnectGuidedTask"
+  },
+  {
+    "ParameterKey": "EnableVMToConnectTask",
+    "ParameterValue": "/1159-voicemail/dev/EnableVMToConnectTask"
+  },
+  {
+    "ParameterKey": "EnableVMToEmail",
+    "ParameterValue": "/1159-voicemail/dev/EnableVMToEmail"
+  },
+  {
+    "ParameterKey": "VMDefaultMode",
+    "ParameterValue": "/1159-voicemail/dev/VMDefaultMode"
+  },
+  {
+    "ParameterKey": "RecordingsExpireInXDays",
+    "ParameterValue": "/1159-voicemail/dev/RecordingsExpireInXDays"
+  },
+  {
+    "ParameterKey": "ExpiredRecordingBehavior",
+    "ParameterValue": "/1159-voicemail/dev/ExpiredRecordingBehavior"
+  },
+  {
+    "ParameterKey": "GuidedTaskRecordingLinksExpireInXMinutes",
+    "ParameterValue": "/1159-voicemail/dev/GuidedTaskRecordingLinksExpireInXMinutes"
+  },
+  {
+    "ParameterKey": "TaskRecordingLinksExpireInXDays",
+    "ParameterValue": "/1159-voicemail/dev/TaskRecordingLinksExpireInXDays"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultFrom",
+    "ParameterValue": "/1159-voicemail/dev/VMToEmailDefaultFrom"
+  },
+  {
+    "ParameterKey": "VMToEmailDefaultTo",
+    "ParameterValue": "/1159-voicemail/dev/VMToEmailDefaultTo"
+  },
+  {
+    "ParameterKey": "VMAgentAddressKey",
+    "ParameterValue": "/1159-voicemail/dev/VMAgentAddressKey"
+  },
+  {
+    "ParameterKey": "VMTestAgentId",
+    "ParameterValue": "/1159-voicemail/dev/VMTestAgentId"
+  },
+  {
+    "ParameterKey": "VMTestQueueARN",
+    "ParameterValue": "/1159-voicemail/dev/VMTestQueueARN"
+  },
+  {
+    "ParameterKey": "EXPTemplateVersion",
+    "ParameterValue": "/1159-voicemail/dev/EXPTemplateVersion"
+  },
+  {
+    "ParameterKey": "EmailRecordingLinksExpireInXDays",
+    "ParameterValue": "/1159-voicemail/dev/EmailRecordingLinksExpireInXDays"
+  },
+  {
+    "ParameterKey": "ClientServicesAgentEmail",
+    "ParameterValue": "/1159-voicemail/dev/ClientServicesAgentEmail"
+  },
+  {
+    "ParameterKey": "SalesAgentEmail",
+    "ParameterValue": "/1159-voicemail/dev/SalesAgentEmail"
+  },
+  {
+    "ParameterKey": "MarketingAgentEmail",
+    "ParameterValue": "/1159-voicemail/dev/MarketingAgentEmail"
+  },
+  {
+    "ParameterKey": "HRAgentEmail",
+    "ParameterValue": "/1159-voicemail/dev/HRAgentEmail"
+  },
+  {
+    "ParameterKey": "OtherAgentEmail",
+    "ParameterValue": "/1159-voicemail/dev/OtherAgentEmail"
+  },
+  {
+    "ParameterKey": "EXPDevBucketPrefix",
+    "ParameterValue": "/1159-voicemail/dev/EXPDevBucketPrefix"
+  }
+]
